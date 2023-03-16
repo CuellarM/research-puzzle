@@ -1,25 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+import { useRef } from "react";
+import AnotherTest from "./AnotherTest";
+import Board from "./Board";
+import BoxWith from "./Box";
+import BoxMe from "./Box";
+import BoxWithDragAndDrop from "./Draggable";
+import Piece from "./Pieces";
+import Puzzle from "./Puzzle";
+import "./styles.css";
+import TestBox from "./TestBox";
+import WordTest from "./Word";
 
-function App() {
+export default function App() {
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {/* <div> */}
+      {/* <Board /> */}
+      {/* <Piece />  */}
+      {/* <BoxWith /> */}
+      {/* <Puzzle /> */}
+      {/* <TestBox /> //most recent */}
+      <AnotherTest />
+      {/* <WordTest /> */}
+      {/* <BoxWithDragAndDrop /> */}
+      {/* </div> */}
+
     </div>
   );
-}
-
-export default App;
+  }

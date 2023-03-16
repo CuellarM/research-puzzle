@@ -1,0 +1,15 @@
+.box {
+    position: relative;
+    width: 500px;
+    height: 500px;
+    background: grey;
+    margin-bottom: 50px;
+  }
+  .circle {
+    border-radius: 50%;
+  }
+  .shape {
+    width: 80px;
+    height: 80px;
+  }
+  
