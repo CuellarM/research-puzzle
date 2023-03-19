@@ -19,32 +19,39 @@ const AnotherTest = () => {
     }
 
     const hasFormedLargerTriangle = (shapes) => {
-        // Assuming shapes is an array containing the coordinates of the vertices of each triangle
-        // Example: [{ id: "blue", vertices: [[x1, y1], [x2, y2], [x3, y3]] }, ...]
-      
-        // Check if each pair of triangles have a common vertex
-        console.log("has formed", shapes)
-        for (let i = 0; i < shapes.length; i++) {
-          for (let j = i + 1; j < shapes.length; j++) {
-            let commonVertices = 0;
-            for (let vertex1 of shapes[i].vertices) {
-              for (let vertex2 of shapes[j].vertices) {
-                if (arePointsConnected(vertex1, vertex2)) {
-                  commonVertices++;
-                }
-              }
-            }
-      
-            // If two triangles do not share exactly one vertex, they cannot form a larger triangle
-            if (commonVertices !== 1) {
-              return false;
-            }
-          }
+        if (shapes.length !== initialShapes.length) {
+          return false;
         }
       
-        // If all pairs of triangles share exactly one vertex, they form a larger triangle
-        return true;
-      }
+        // Calculate the center of mass of the vertices
+        const centerOfMass = shapes.reduce(
+          (acc, shape) => {
+            const { vertices } = shape;
+            const shapeCenterOfMass = vertices.reduce(
+              (shapeAcc, vertex) => ({
+                x: shapeAcc.x + vertex.x / vertices.length,
+                y: shapeAcc.y + vertex.y / vertices.length,
+              }),
+              { x: 0, y: 0 }
+            );
+            return {
+              x: acc.x + shapeCenterOfMass.x / shapes.length,
+              y: acc.y + shapeCenterOfMass.y / shapes.length,
+            };
+          },
+          { x: 0, y: 0 }
+        );
+      
+        // Check if all vertices are close to the center of mass
+        const maxDistance = 5; // Maximum allowed distance from the center of mass
+        return shapes.every((shape) =>
+          shape.vertices.every(
+            (vertex) =>
+              Math.abs(vertex.x - centerOfMass.x) <= maxDistance && Math.abs(vertex.y - centerOfMass.y) <= maxDistance
+          )
+        );
+      };
+      
 
     const snapThreshold = 15;
 
