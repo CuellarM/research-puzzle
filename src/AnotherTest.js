@@ -1,8 +1,102 @@
 import React, { useEffect, useState } from "react";
+import { Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import "./AnotherTest.css";
+import { playerSocket } from "./service/ConnectSocket";
+import TabPage from "./TabPage";
+import SelectLabels from "./components/select/Select";
+import Tabs from "./TabLocal";
 
 const AnotherTest = () => {
+  const history = useNavigate();
+
+  const tabTitles = [
+    { id: 'tab1', title: 'Tab 1', content: 'Content for Tab 1' },
+    { id: 'tab2', title: 'Tab 2', content: 'Content for Tab 2' },
+    { id: 'tab3', title: 'Tab 3', content: 'Content for Tab 3' },
+  ];
+
+  const [playerId, setPlayerId] = useState("");
+  const [otherPlayerValues, setOtherPlayerValues] = useState([]);
+
+  const players = ["Obed", "Rio", "Gerte"]
+
+  // const handlePlayerName = (e) => {
+  //   setPlayerId(e)
+  // }
+
+  useEffect(() => {
+    console.log("in the app va;urs", otherPlayerValues);
+  }, [otherPlayerValues])
+
+  const handleButtonClick = () => {
+    history("/tabs");
+  };
     const [droppedShapes, setDroppedShapes] = useState([]);
+    // Add a new state variable to control the overlay visibility
+    const [showOverlay, setShowOverlay] = useState(true);
+    const [playerName, setPlayerName] = useState("");
+
+    const [roomId, setRoomId] = useState(null);
+
+    useEffect(() => {
+      console.log("eeeeeeeeeeeeeey")
+    playerSocket.emit('playerValues', roomId, playerName, droppedShapes) 
+    // => {
+    //   console.log("player values", playerName, droppedShapes);
+    // });
+
+    }, [droppedShapes])
+
+    // useEffect(() => {
+    //   // Join the "lobby" room when the app loads
+    //   console.log("room", roomId)
+    //   if(roomId == null){
+    //     playerSocket.emit('joinRoom', 'lobby');
+    //   }
+      
+  
+    //   // Listen for the "playerValues" event
+    //   playerSocket.on('playerValues', (playerId, values) => {
+    //     console.log(`received values from player ${playerId}:`, values);
+    //   });
+  
+    //   return () => {
+    //     // Leave the room when the app unmounts
+    //     playerSocket.emit('leaveRoom', roomId);
+    //   };
+    // }, [roomId]);
+  
+    const handleJoinRoom = () => {
+      // const newRoomId = prompt('Enter room ID:');
+      // playerSocket.emit('leaveRoom', roomId);
+      playerSocket.emit('registerPlayer', playerName)
+      playerSocket.emit('joinRoom', roomId);
+      // setRoomId(newRoomId);
+    };
+
+    const handlePlayerNameChange = (event) => {
+      setPlayerName(event.target.value);
+    }
+
+    useEffect(() => {
+      setPlayerId(playerName);
+    }, [playerName])
+
+    useEffect(() => {
+      playerSocket.on('playerValues', (playerId, values) => {
+        console.log("received", playerId, values)
+        setOtherPlayerValues(values);
+      });
+    }, [playerSocket, playerName])
+
+    console.log('the dropped', droppedShapes)
+
+    // Add a new function to handle the "Start Game" button click
+    const handleStartGame = () => {
+      handleJoinRoom();
+      setShowOverlay(false);
+    };
 
 
     const distance = (x1, y1, x2, y2) => {
@@ -19,7 +113,9 @@ const AnotherTest = () => {
     }
 
     const hasFormedLargerTriangle = (shapes) => {
+        console.log('shapes length', shapes.length)
         if (shapes.length !== initialShapes.length) {
+            console.log('agggg')
           return false;
         }
       
@@ -29,8 +125,8 @@ const AnotherTest = () => {
             const { vertices } = shape;
             const shapeCenterOfMass = vertices.reduce(
               (shapeAcc, vertex) => ({
-                x: shapeAcc.x + vertex.x / vertices.length,
-                y: shapeAcc.y + vertex.y / vertices.length,
+                x: shapeAcc.x + vertex[0] / vertices.length,
+                y: shapeAcc.y + vertex[1] / vertices.length,
               }),
               { x: 0, y: 0 }
             );
@@ -41,101 +137,142 @@ const AnotherTest = () => {
           },
           { x: 0, y: 0 }
         );
+
+        
       
         // Check if all vertices are close to the center of mass
-        const maxDistance = 5; // Maximum allowed distance from the center of mass
-        return shapes.every((shape) =>
-          shape.vertices.every(
-            (vertex) =>
-              Math.abs(vertex.x - centerOfMass.x) <= maxDistance && Math.abs(vertex.y - centerOfMass.y) <= maxDistance
-          )
-        );
+        const maxDistance = 200; // Maximum allowed distance from the center of mass
+
+        var led = shapes.every((shape) =>
+        shape.vertices.every(
+          (vertex) => {
+            console.log('the vertex', vertex[0])
+            console.log('the vertmas ex', centerOfMass)
+            console.log('the abs', Math.abs(vertex[0] - centerOfMass.x))
+            console.log('both', maxDistance && Math.abs(vertex[1] - centerOfMass.y))
+            console.log("check boolean", Math.abs(vertex[0] - centerOfMass.x) <= maxDistance && Math.abs(vertex[1] - centerOfMass.y) <= maxDistance)
+            Math.abs(vertex[0] - centerOfMass.x) <= maxDistance && Math.abs(vertex[1] - centerOfMass.y) <= maxDistance
+          }
+            // Math.abs(vertex.x - centerOfMass.x) <= maxDistance && Math.abs(vertex.y - centerOfMass.y) <= maxDistance
+        )
+      );
+
+      console.log('centerOfMass', led)
+        return led;
       };
       
 
     const snapThreshold = 15;
 
-  const initialShapes = [
-    {
-      id: "blue",
-      shape: "triangle",
-      borderColor: "transparent transparent #0074D9 transparent",
-      borderWidth: "0 50px 86.6px 50px",
-      transform: "translateY(43.3px)",
-      vertices: [],
-    },
-    {
-      id: "red",
-      shape: "triangle",
-      borderColor: "transparent transparent #FF4136 transparent",
-      borderWidth: "0 50px 86.6px 50px",
-      transform: "translateY(43.3px) rotate(120deg)",
-      vertices: [],
-    },
-    {
-      id: "green",
-      shape: "triangle",
-      borderColor: "transparent transparent #2ECC40 transparent",
-      borderWidth: "0 50px 86.6px 50px",
-      transform: "translateY(43.3px) rotate(240deg)",
-      vertices: [],
-    },
-    {
-      id: "purple",
-      shape: "triangle",
-      borderColor: "#B10DC9 transparent transparent transparent",
-      borderWidth: "86.6px 50px 0 50px",
-      transform: "",
-      vertices: [],
-    },
-  ];
+    const initialShapes = [
+      {
+        id: "blue",
+        name: "A1",
+        shape: "triangle",
+        borderColor: "transparent transparent #0074D9 transparent",
+        borderWidth: "0 50px 86.6px 50px",
+        transform: "translateY(43.3px)",
+        vertices: [],
+      },
+      {
+        id: "red",
+        name: "A2",
+        shape: "triangle",
+        borderColor: "transparent transparent #FF4136 transparent",
+        borderWidth: "0 50px 86.6px 50px",
+        transform: "translateY(43.3px) rotate(120deg) translateY(-43.3px)",
+        vertices: [],
+      },
+      {
+        id: "green",
+        name: "A3",
+        shape: "triangle",
+        borderColor: "transparent transparent #2ECC40 transparent",
+        borderWidth: "0 50px 86.6px 50px",
+        transform: "translateY(43.3px) rotate(240deg) translateY(-43.3px)",
+        vertices: [],
+      },
+      {
+        id: "purple",
+        name: "A4",
+        shape: "triangle",
+        borderColor: "#B10DC9 transparent transparent transparent",
+        borderWidth: "86.6px 50px 0 50px",
+        transform: "",
+        vertices: [],
+      },
+    ];
   
   const [selectedShape, setSelectedShape] = useState(null);
+  const collisionThreshold = 5; // Adjust this value as needed
 
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!selectedShape) return;
-      let { style } = selectedShape;
-      let left = parseFloat(style.left);
-      let top = parseFloat(style.top);
-
+  
+      const { style } = selectedShape;
+      const currentLeft = parseFloat(style.left);
+      const currentTop = parseFloat(style.top);
+      let newLeft = currentLeft;
+      let newTop = currentTop;
+  
       switch (e.key) {
         case "ArrowUp":
-          style.top = `${top - 5}px`;
+          newTop -= 5;
           break;
         case "ArrowDown":
-          style.top = `${top + 5}px`;
+          newTop += 5;
           break;
         case "ArrowLeft":
-          style.left = `${left - 5}px`;
+          newLeft -= 5;
           break;
         case "ArrowRight":
-          style.left = `${left + 5}px`;
+          newLeft += 5;
           break;
         default:
           break;
       }
-
-    const shapeIndex = droppedShapes.findIndex((shape) => shape.id === selectedShape.id);
-    if (shapeIndex >= 0) {
-      const vertices = calculateVertices(selectedShape, left, top);
-      const updatedShape = { ...droppedShapes[shapeIndex], position: { x: left, y: top }, vertices };
-      const updatedDroppedShapes = [
-        ...droppedShapes.slice(0, shapeIndex),
-        updatedShape,
-        ...droppedShapes.slice(shapeIndex + 1),
-      ];
-      setDroppedShapes(updatedDroppedShapes);
-    }
-};
-
-
+  
+      const newVertices = calculateVertices(selectedShape, newLeft, newTop);
+      const selectedShapeIndex = droppedShapes.findIndex((shape) => shape.id === selectedShape.id);
+  
+      const isColliding = droppedShapes.some((otherShape, index) => {
+        if (index === selectedShapeIndex) return false;
+  
+        return newVertices.some((vertex1) => {
+          return otherShape.vertices.some((vertex2) => {
+            const dx = Math.abs(vertex1.x - vertex2.x);
+            const dy = Math.abs(vertex1.y - vertex2.y);
+  
+            return (dx < collisionThreshold && dy < collisionThreshold);
+          });
+        });
+      });
+  
+      if (!isColliding) {
+        style.left = `${newLeft}px`;
+        style.top = `${newTop}px`;
+  
+        const updatedShape = { ...droppedShapes[selectedShapeIndex], position: { x: newLeft, y: newTop }, vertices: newVertices };
+        const updatedDroppedShapes = [
+          ...droppedShapes.slice(0, selectedShapeIndex),
+          updatedShape,
+          ...droppedShapes.slice(selectedShapeIndex + 1),
+        ];
+        setDroppedShapes(updatedDroppedShapes);
+        console.log("the update shape now", updatedShape)
+        playerSocket.emit('updatedPlayerValues', roomId, playerName, updatedShape) 
+      }
+    };
+  
     window.addEventListener("keydown", handleKeyDown);
-
+  
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [selectedShape]);
+  
+  
 
   const handleShapeClick = (e) => {
     setSelectedShape(e.target);
@@ -144,15 +281,15 @@ const AnotherTest = () => {
   useEffect(() => {
     const gameBox = document.getElementById("gameBox");
     const shapesContainer = document.getElementById("shapesContainer");
-
+  
     gameBox.addEventListener("dragover", handleDragOver);
     gameBox.addEventListener("drop", handleDrop);
-
+  
     return () => {
       gameBox.removeEventListener("dragover", handleDragOver);
       gameBox.removeEventListener("drop", handleDrop);
     };
-  }, []);
+  }, [droppedShapes]);
 
   const handleDragStart = (e, id) => {
     e.dataTransfer.setData("text/plain", id);
@@ -218,15 +355,23 @@ const AnotherTest = () => {
       box.appendChild(shape);
       shape.classList.add("inBox");
 
+      console.log("the shape", shape)
       const vertices = calculateVertices(shape, e.clientX - box.getBoundingClientRect().left, e.clientY - box.getBoundingClientRect().top);
-      let newDroppedShapes = droppedShapes;
-      newDroppedShapes = [
-        ...newDroppedShapes,
+      const newDroppedShapes = [
+        ...droppedShapes,
         {
           id: shape.id,
+          name: shape.name,
+          position: shape.style.position,
+          left: shape.style.left,
+          top: shape.style.top,
+          borderColor: shape.style.borderColor,
+          borderWidth: shape.style.borderWidth,
+          transform: shape.style.transform,
           vertices,
         },
       ];
+      
   
       setDroppedShapes(newDroppedShapes);
       console.log("vert", droppedShapes, shape.id)
@@ -255,31 +400,82 @@ const AnotherTest = () => {
   };
 
   return (
-    <div>
-      <div id="gameBox" className="box"></div>
-      <div id="shapesContainer">
-        {initialShapes.map((shape) => (
-          <div
-            key={shape.id}
-            className={`shape ${shape.shape}`}
-            style={{
-                borderColor: shape.borderColor,
-              backgroundColor: shape.color,
-              borderWidth: shape.borderWidth,
-              transform: shape.transform,
-              width: 0,
-              height: 0,
-              borderStyle: "solid",
-              position: "relative",
-            //   width: shape.width,
-            //   height: shape.height,
-            }}
-            id={shape.id}
-            draggable={true}
-            onDragStart={(e) => handleDragStart(e, shape.id)}
-            onClick={handleShapeClick}
-          ></div>
-        ))}
+    <div className="container">
+      {showOverlay && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 999,
+          }}
+        >
+      <input
+        type="text"
+        value={playerName}
+        onChange={handlePlayerNameChange}
+        placeholder="Player name"
+      />
+       <input
+        type="text"
+        value={roomId}
+        onChange={(e) => setRoomId(e.target.value)}
+        placeholder="Game room"
+      />
+      <button
+        onClick={handleStartGame}     
+        //{handleStartGame}
+        disabled={!playerName&&!roomId}
+      >
+        Start Game
+      </button>
+        </div>
+      )}
+      <div className="left">
+      <Tabs tabTitles={tabTitles} />
+        {/* <TabPage /> */}
+
+        <div>
+          <h2>Request shapes from players</h2>
+          <SelectLabels players={players} />
+          <Button variant="contained">Request</Button>
+        </div>
+      </div>
+      <div className="divider"></div>
+      <div className="right">
+      <div className="keep-right">
+        <div id="gameBox" className="main-game-box"></div>
+        <div id="shape" className="shape">
+      {initialShapes.map((shape) => (
+        <div
+          key={shape.id}
+          className="pieceShape"
+          style={{
+            borderColor: shape.borderColor,
+            backgroundColor: shape.color,
+            borderWidth: shape.borderWidth,
+            justifyContent: "center",
+            alignItems: "center",
+            width: 0,
+            height: 0,
+            borderStyle: "solid",
+            position: "relative",
+          }}
+          id={shape.id}
+          draggable={true}
+          onDragStart={(e) => handleDragStart(e, shape.id)}
+          onClick={handleShapeClick}
+        ><span className="shape-text">{shape.name}</span></div>
+      ))}
+      </div>
+        {/* <PlayShapes /> */}
+      </div>
       </div>
     </div>
   );

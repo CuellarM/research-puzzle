@@ -1,15 +1,93 @@
-.box {
-    position: relative;
-    width: 500px;
-    height: 500px;
-    background: grey;
-    margin-bottom: 50px;
+.container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.right{
+  width: 50%;
+}
+
+.keep-right {
+  margin-left: auto;
+}
+
+.divider {
+  /* height: 1px; */
+  background-color: #ccc;
+  flex-grow: 1;
+  margin: 0 10px;
+}
+/* f0f0f0 */
+
+.main-game-box {
+  width: 37%;
+  height: 62%;
+  background-color: #41b571;
+  position: fixed;
+  top: 5%;
+  margin: 0 auto;
+  margin-bottom: "40px";
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
   }
-  .circle {
-    border-radius: 50%;
-  }
+  
   .shape {
-    width: 80px;
-    height: 80px;
+    cursor: move;
   }
+
+  .pieceShape {
+            /* Add margin to separate shapes horizontally */
+            margin: 0 10px;
+
+            /* Set fixed width and height for all shapes */
+            width: 50px;
+            height: 50px;
+  }
+
+  .shape {
+    /* position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 40px;
+    background-color: #ccc; */
+    position: absolute;
+    bottom: 0;
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .triangle {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    position: relative;
+    box-sizing: border-box;
+  }
+  
+  .triangle:before {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: white;
+    width: 100%;
+    height: 100%;
+  }
+
+  .shape-text {
+    color: white;
+    font-size: 16px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
   

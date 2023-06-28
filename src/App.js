@@ -1,4 +1,5 @@
-import { useRef } from "react";
+
+import React, { useEffect, useRef, useState } from "react";
 import AnotherTest from "./AnotherTest";
 import Board from "./Board";
 import BoxWith from "./Box";
@@ -9,18 +10,49 @@ import Puzzle from "./Puzzle";
 import "./styles.css";
 import TestBox from "./TestBox";
 import WordTest from "./Word";
+import GameView from "./GameView";
+import TabPage from "./TabPage";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
-export default function App() {
+const App = () => {
+  // const AnotherPage =() => {
+  //   return  (
+  //   <AnotherTest setPlayerId={handlePlayerName} setOtherPlayerValues={setOtherPlayerValues}/>);
+  // }
+
+  const tabTitles = [
+    { id: 'tab1', title: 'Tab 1', content: 'Content for Tab 1' },
+    { id: 'tab2', title: 'Tab 2', content: 'Content for Tab 2' },
+    { id: 'tab3', title: 'Tab 3', content: 'Content for Tab 3' },
+  ];
 
   return (
     <div className="App">
-      {/* <div> */}
-      {/* <Board /> */}
-      {/* <Piece />  */}
-      {/* <BoxWith /> */}
-      {/* <Puzzle /> */}
-      {/* <TestBox /> //most recent */}
-      <AnotherTest />
+          <Router>
+      <Routes>
+        <Route path="/" element={<AnotherTest />} />
+        {/* <Route path="/tabs/*" element={<TabPage />} /> */}
+      </Routes>
+    </Router>
+            {/* <Router>
+        <Routes>
+          <Route path="/" exact element={AnotherPage} />
+          <Route path="/tabs" element={TabPage} />
+        </Routes>
+      </Router>
+     
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginTop: "20px",
+        }}
+      >
+        {console.log("player name", playerId)}
+        <TabPage />
+        <GameView droppedShapes={otherPlayerValues} playerName={playerId} /> */}
+        {/* <GameView droppedShapes={[]} /> */}
+      {/* </div> */}
       {/* <WordTest /> */}
       {/* <BoxWithDragAndDrop /> */}
       {/* </div> */}
@@ -28,3 +60,5 @@ export default function App() {
     </div>
   );
   }
+
+  export default App;
