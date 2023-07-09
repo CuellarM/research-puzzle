@@ -1,0 +1,1 @@
+export const PLAYER_PLAYS_CACHE = 'sprite-moves';

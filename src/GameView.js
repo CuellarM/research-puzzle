@@ -91,7 +91,6 @@ function renderDroppedShapes() {
           transform: shape.transfrom
         }}
         id={shape.id}
-        onClick={handleShapeClick}
       >
        <span className="shape-text">{shape.name}</span>
       </div>
@@ -104,11 +103,6 @@ function renderDroppedShapes() {
     <div className="game-view-container">
       <div id="remoteGameBox" className="box">
         {renderDroppedShapes()}
-      </div>
-      <div>
-        <p>
-            {playerId}
-        </p>
       </div>
     </div>
   );

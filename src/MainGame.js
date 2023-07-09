@@ -1,13 +1,14 @@
+/* eslint-disable react/prop-types */
 import React, { useEffect, useState } from "react";
-import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import "./AnotherTest.css";
 import { playerSocket } from "./service/ConnectSocket";
-import TabPage from "./TabPage";
-import SelectLabels from "./components/select/Select";
 import Tabs from "./TabLocal";
+import SelectPlayer from "./components/customSelect/SelectPlayer";
+import { SpriteRequestAlert } from "./components/alert/SpriteAlert";
+import { PLAYER_PLAYS_CACHE } from "./constants/Constants";
 
-const AnotherTest = () => {
+const MainGame = ({newGameSprite, playersInRoom, playerName, roomId}) => {
   const history = useNavigate();
 
   const tabTitles = [
@@ -18,85 +19,96 @@ const AnotherTest = () => {
 
   const [playerId, setPlayerId] = useState("");
   const [otherPlayerValues, setOtherPlayerValues] = useState([]);
+  const [removeName, setRemoveName] = useState('');
+  const [droppedShapes, setDroppedShapes] = useState([]);
+  const [requestedObject, setRequestedObject] = useState([]);
 
-  const players = ["Obed", "Rio", "Gerte"]
 
-  // const handlePlayerName = (e) => {
-  //   setPlayerId(e)
-  // }
 
-  useEffect(() => {
-    console.log("in the app va;urs", otherPlayerValues);
-  }, [otherPlayerValues])
+  // this removes the shape and passes it on to the requesting player
+  const handleRemoveShape = (shapeName, requestingPlayer, gameSprites) => {
+      const shapeElement = document.getElementsByName(shapeName)?.[0];
+      if (!shapeElement) {
+        console.error(`Shape element with ID '${shapeName}' not found.`);
+        return;
+      }
+    
+      const parentElement = shapeElement.parentNode;
+      if (!parentElement || parentElement.id !== "gameBox") {
+        console.error(`Shape element is not a direct child of 'gameBox'.`);
+        return;
+      }
+    
+      parentElement.removeChild(shapeElement);
 
-  const handleButtonClick = () => {
-    history("/tabs");
-  };
-    const [droppedShapes, setDroppedShapes] = useState([]);
-    // Add a new state variable to control the overlay visibility
-    const [showOverlay, setShowOverlay] = useState(true);
-    const [playerName, setPlayerName] = useState("");
-
-    const [roomId, setRoomId] = useState(null);
-
-    useEffect(() => {
-      console.log("eeeeeeeeeeeeeey")
-    playerSocket.emit('playerValues', roomId, playerName, droppedShapes) 
-    // => {
-    //   console.log("player values", playerName, droppedShapes);
-    // });
-
-    }, [droppedShapes])
-
-    // useEffect(() => {
-    //   // Join the "lobby" room when the app loads
-    //   console.log("room", roomId)
-    //   if(roomId == null){
-    //     playerSocket.emit('joinRoom', 'lobby');
-    //   }
+      const playerObject = gameSprites.find((obj) => obj.name === shapeName);
+      if(playerObject){
+        playerSocket.emit('sendToRequestingPlayer', requestingPlayer, playerObject);
+        emitSpritePositionToOtherPlayers(playerObject, true);
+      }
       
-  
-    //   // Listen for the "playerValues" event
-    //   playerSocket.on('playerValues', (playerId, values) => {
-    //     console.log(`received values from player ${playerId}:`, values);
-    //   });
-  
-    //   return () => {
-    //     // Leave the room when the app unmounts
-    //     playerSocket.emit('leaveRoom', roomId);
-    //   };
-    // }, [roomId]);
-  
-    const handleJoinRoom = () => {
-      // const newRoomId = prompt('Enter room ID:');
-      // playerSocket.emit('leaveRoom', roomId);
-      playerSocket.emit('registerPlayer', playerName)
-      playerSocket.emit('joinRoom', roomId);
-      // setRoomId(newRoomId);
     };
 
-    const handlePlayerNameChange = (event) => {
-      setPlayerName(event.target.value);
+  //Request to get sprite from another player
+  const handleSpriteRequestToPlayer = (sendingPlayer, spriteName) => {
+    playerSocket.emit('spriteRequest', playerName, spriteName, sendingPlayer);
+  }
+
+  // Listening if anyone has requested from you
+  useEffect(() => {
+    playerSocket.on('spriteRequest', (requestingPlayer, spriteName) => {
+      SpriteRequestAlert(spriteName, requestingPlayer, newGameSprite, handleRemoveShape);
+    });
+  }, [playerSocket])
+
+
+  const handleRequestedSprites = (spriteObject) => {
+    setRequestedObject(prevObjects => {
+      // Check if the object already exists in the array
+      const objectExists = prevObjects.some(obj => obj === spriteObject);
+    
+      // If the object already exists, return the previous array
+      if (objectExists) {
+        return prevObjects;
+      }
+    
+      // If the object doesn't exist, add it to the array
+      return [...prevObjects, spriteObject];
+    });
+  }
+
+
+    // Sprites that you have requested for and received
+    useEffect(() => {
+      playerSocket.on('exchangedSprites', (spriteObject) => {
+        console.log('received sprite alert', spriteObject);
+        handleRequestedSprites(spriteObject);
+      });
+    }, [playerSocket])
+
+
+    useEffect(() => {
+      playerSocket.on(`${playerName}-${PLAYER_PLAYS_CACHE}-${roomId}`)
+    })
+
+    const emitSpritePositionToOtherPlayers = (droppedShape, isRemove) => {
+      playerSocket.emit('playerValues', roomId, playerName, droppedShape, isRemove);
     }
+
 
     useEffect(() => {
       setPlayerId(playerName);
     }, [playerName])
 
-    useEffect(() => {
-      playerSocket.on('playerValues', (playerId, values) => {
-        console.log("received", playerId, values)
-        setOtherPlayerValues(values);
-      });
-    }, [playerSocket, playerName])
+    // useEffect(() => {
+    //   playerSocket.on('playerValues', (playerId, values) => {
+    //     console.log("received", playerId, values)
+    //     setOtherPlayerValues(values);
+    //   });
+    // }, [playerSocket, playerName])
 
     console.log('the dropped', droppedShapes)
-
-    // Add a new function to handle the "Start Game" button click
-    const handleStartGame = () => {
-      handleJoinRoom();
-      setShowOverlay(false);
-    };
+    console.log('the removed sprite', newGameSprite)
 
 
     const distance = (x1, y1, x2, y2) => {
@@ -146,11 +158,6 @@ const AnotherTest = () => {
         var led = shapes.every((shape) =>
         shape.vertices.every(
           (vertex) => {
-            console.log('the vertex', vertex[0])
-            console.log('the vertmas ex', centerOfMass)
-            console.log('the abs', Math.abs(vertex[0] - centerOfMass.x))
-            console.log('both', maxDistance && Math.abs(vertex[1] - centerOfMass.y))
-            console.log("check boolean", Math.abs(vertex[0] - centerOfMass.x) <= maxDistance && Math.abs(vertex[1] - centerOfMass.y) <= maxDistance)
             Math.abs(vertex[0] - centerOfMass.x) <= maxDistance && Math.abs(vertex[1] - centerOfMass.y) <= maxDistance
           }
             // Math.abs(vertex.x - centerOfMass.x) <= maxDistance && Math.abs(vertex.y - centerOfMass.y) <= maxDistance
@@ -179,8 +186,8 @@ const AnotherTest = () => {
         name: "A2",
         shape: "triangle",
         borderColor: "transparent transparent #FF4136 transparent",
-        borderWidth: "0 50px 86.6px 50px",
-        transform: "translateY(43.3px) rotate(120deg) translateY(-43.3px)",
+        borderWidth: "0 90px 106.6px 10px",
+        transform: "translateY(43.3px) rotate(180deg) translateY(-43.3px)",
         vertices: [],
       },
       {
@@ -235,6 +242,8 @@ const AnotherTest = () => {
   
       const newVertices = calculateVertices(selectedShape, newLeft, newTop);
       const selectedShapeIndex = droppedShapes.findIndex((shape) => shape.id === selectedShape.id);
+
+      console.log('th shape index', selectedShapeIndex);
   
       const isColliding = droppedShapes.some((otherShape, index) => {
         if (index === selectedShapeIndex) return false;
@@ -254,6 +263,8 @@ const AnotherTest = () => {
         style.top = `${newTop}px`;
   
         const updatedShape = { ...droppedShapes[selectedShapeIndex], position: { x: newLeft, y: newTop }, vertices: newVertices };
+        console.log('The update shape', updatedShape);
+        emitSpritePositionToOtherPlayers(updatedShape, false);
         const updatedDroppedShapes = [
           ...droppedShapes.slice(0, selectedShapeIndex),
           updatedShape,
@@ -333,9 +344,9 @@ const AnotherTest = () => {
         console.log("The pieces have not yet formed a larger triangle.");
       }
   }, [droppedShapes]);
-  
 
   const handleDrop = (e) => {
+    console.log("new gane sprite", newGameSprite)
     e.preventDefault();
     const shapeId = e.dataTransfer.getData("text");
     const shape = document.getElementById(shapeId);
@@ -352,29 +363,35 @@ const AnotherTest = () => {
 
     if (!shape.classList.contains("inBox")) {
       shape.parentNode.removeChild(shape);
-      box.appendChild(shape);
+      if (shape.parentNode !== box) {
+        box.appendChild(shape);
+      }
       shape.classList.add("inBox");
 
-      console.log("the shape", shape)
       const vertices = calculateVertices(shape, e.clientX - box.getBoundingClientRect().left, e.clientY - box.getBoundingClientRect().top);
+
+      const droppedShapeObject = {
+        id: shape?.id,
+        name: shape?.title,
+        position: shape?.style?.position,
+        left: shape?.style?.left,
+        top: shape?.style?.top,
+        borderColor: shape?.style?.borderColor,
+        borderWidth: shape?.style?.borderWidth,
+        transform: shape?.style?.transform,
+        vertices,
+      }
+
       const newDroppedShapes = [
         ...droppedShapes,
-        {
-          id: shape.id,
-          name: shape.name,
-          position: shape.style.position,
-          left: shape.style.left,
-          top: shape.style.top,
-          borderColor: shape.style.borderColor,
-          borderWidth: shape.style.borderWidth,
-          transform: shape.style.transform,
-          vertices,
-        },
+        droppedShapeObject
       ];
       
   
       setDroppedShapes(newDroppedShapes);
-      console.log("vert", droppedShapes, shape.id)
+      setRemoveName(shape?.title);
+
+      emitSpritePositionToOtherPlayers(droppedShapeObject, false);
     }
 
     const inBoxShapes = Array.from(box.getElementsByClassName("shape inBox"));
@@ -398,53 +415,15 @@ const AnotherTest = () => {
       }
     });
   };
+  
 
   return (
     <div className="container">
-      {showOverlay && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 999,
-          }}
-        >
-      <input
-        type="text"
-        value={playerName}
-        onChange={handlePlayerNameChange}
-        placeholder="Player name"
-      />
-       <input
-        type="text"
-        value={roomId}
-        onChange={(e) => setRoomId(e.target.value)}
-        placeholder="Game room"
-      />
-      <button
-        onClick={handleStartGame}     
-        //{handleStartGame}
-        disabled={!playerName&&!roomId}
-      >
-        Start Game
-      </button>
-        </div>
-      )}
       <div className="left">
-      <Tabs tabTitles={tabTitles} />
-        {/* <TabPage /> */}
-
+      <Tabs playerName={playerName} />
         <div>
           <h2>Request shapes from players</h2>
-          <SelectLabels players={players} />
-          <Button variant="contained">Request</Button>
+          <SelectPlayer playerObject={playersInRoom} handleRequest={handleSpriteRequestToPlayer}/>
         </div>
       </div>
       <div className="divider"></div>
@@ -452,14 +431,16 @@ const AnotherTest = () => {
       <div className="keep-right">
         <div id="gameBox" className="main-game-box"></div>
         <div id="shape" className="shape">
-      {initialShapes.map((shape) => (
+      {newGameSprite?.map((shape, index) => (
         <div
-          key={shape.id}
+          key={shape?.name}
+          title={shape?.name}
           className="pieceShape"
+          name={shape?.name}
           style={{
-            borderColor: shape.borderColor,
-            backgroundColor: shape.color,
-            borderWidth: shape.borderWidth,
+            borderColor: shape?.borderColor,
+            backgroundColor: shape?.color,
+            borderWidth: shape?.borderWidth,
             justifyContent: "center",
             alignItems: "center",
             width: 0,
@@ -467,12 +448,41 @@ const AnotherTest = () => {
             borderStyle: "solid",
             position: "relative",
           }}
-          id={shape.id}
+          id={shape?.name}
           draggable={true}
           onDragStart={(e) => handleDragStart(e, shape.id)}
           onClick={handleShapeClick}
-        ><span className="shape-text">{shape.name}</span></div>
+          onDrop={(e) =>handleDrop(e)}
+        ><span className="shape-text">{shape?.name}</span>
+        </div>
       ))}
+      {
+        requestedObject?.map((shape, index) => (
+          <div
+            key={shape?.name}
+            title={shape?.name}
+            className="pieceShape"
+            name={shape?.name}
+            style={{
+              borderColor: shape?.borderColor,
+              backgroundColor: shape?.color,
+              borderWidth: shape?.borderWidth,
+              justifyContent: "center",
+              alignItems: "center",
+              width: 0,
+              height: 0,
+              borderStyle: "solid",
+              position: "relative",
+            }}
+            id={shape?.name}
+            draggable={true}
+            onDragStart={(e) => handleDragStart(e, shape?.id)}
+            onClick={handleShapeClick}
+            onDrop={(e) =>handleDrop(e)}
+          ><span className="shape-text">{shape?.name}</span>
+          </div>
+        ))
+      }
       </div>
         {/* <PlayShapes /> */}
       </div>
@@ -481,4 +491,4 @@ const AnotherTest = () => {
   );
 };
 
-export default AnotherTest;
+export default MainGame;

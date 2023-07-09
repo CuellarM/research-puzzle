@@ -1,50 +1,76 @@
-/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import GameView from "./GameView";
 import { playerSocket } from "./service/ConnectSocket";
 import "./TabLocal.css"
 
-const Tabs = ({ tabTitles }) => {
-  const [activeTab, setActiveTab] = useState(tabTitles?.[0]?.id);
+const Tabs = ({ playerName }) => {
 
-  const handleTabClick = (tabId) => {
-    setActiveTab(tabId);
+  const [tabContent, setTabContent] = useState([]);
+  const [playerValues, setPlayerValues] = useState([]);
+  const [activeTab, setActiveTab] = useState(null);
+  const [isContentAvailable, setIsContentAvailable] = useState(false);
+  const [isPlayerValuesAvailable, setIsPlayerValuesAvailable] = useState(false);
+
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+    const content = playerValues?.find((item) => Object.keys(item)[0] === tab);
+    if (content) {
+      setTabContent(content[tab]);
+      setIsContentAvailable(true);
+    } else {
+      setTabContent([]);
+      setIsContentAvailable(false);
+    }
   };
-
+  
+  const getActivePlayerTab = (playerValues) => {
+    const val = Object.keys(playerValues?.[0])?.[0];
+    setActiveTab(val);
+    const content = playerValues?.find((item) => Object.keys(item)[0] === val);
+    setTabContent(content[val]);
+    setIsContentAvailable(true);
+  }
   useEffect(() => {
-    console.log("listening");
     // Listen for playerValues events from other players
     playerSocket.on('playerValues', data => {
-      console.log("get all players", data);
+      getActivePlayerTab(data);
+      setPlayerValues(data);
+      setIsPlayerValuesAvailable(true);
     });
   }, [playerSocket]);
 
   return (
     <div>
+{!isPlayerValuesAvailable && <div> <h4> Player tabs would show here when other players start playing. </h4> </div>}
+      {isPlayerValuesAvailable &&       
       <div className="tabs">
-        {tabTitles?.map((tab) => (
-          <div
-            key={tab.id}
-            className={`tab ${activeTab === tab.id ? 'active' : ''}`}
-            onClick={() => handleTabClick(tab.id)}
-          >
-            {tab.title}
-          </div>
-        ))}
+        {playerValues?.map((item) => {
+          const tabTitle = Object.keys(item).filter(key => key !== playerName)[0];
+          return (
+            <div
+              key={tabTitle}
+              className={`tab ${activeTab === tabTitle ? 'active' : ''}`}
+              onClick={() => handleTabClick(tabTitle)}
+            >
+              {tabTitle}
+            </div>
+          );
+        })}
       </div>
+      }
+      {!isContentAvailable && <div className='content'> <GameView /></div>}
+      {isContentAvailable &&       
       <div className="content">
-        {tabTitles?.map((tab) => (
-          <div
-            key={tab.id}
-            className={`tab-content ${activeTab === tab.id ? 'active' : ''}`}
-          >
-            {/* {tab.content} */}
-            <GameView />
-          </div>
-        ))}
+            <GameView playerId={activeTab}  playerObjects={tabContent}/>
       </div>
+      }
     </div>
   );
 };
 
 export default Tabs;
+
+Tabs.propTypes = {
+  playerName: PropTypes.string
+}

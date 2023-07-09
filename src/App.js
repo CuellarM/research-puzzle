@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef, useState } from "react";
-import AnotherTest from "./AnotherTest";
+import AnotherTest from "./MainGame";
 import Board from "./Board";
 import BoxWith from "./Box";
 import BoxMe from "./Box";
@@ -13,6 +13,9 @@ import WordTest from "./Word";
 import GameView from "./GameView";
 import TabPage from "./TabPage";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import DropBox from "./dropBox/DropBox";
+import Try from "./test/Try";
+import StartPage from "./StartPage";
 
 const App = () => {
   // const AnotherPage =() => {
@@ -30,7 +33,7 @@ const App = () => {
     <div className="App">
           <Router>
       <Routes>
-        <Route path="/" element={<AnotherTest />} />
+        <Route path="/" element={<StartPage />} />
         {/* <Route path="/tabs/*" element={<TabPage />} /> */}
       </Routes>
     </Router>

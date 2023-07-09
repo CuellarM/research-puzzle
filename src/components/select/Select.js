@@ -8,7 +8,7 @@ import Select from '@mui/material/Select';
 export default function SelectLabels({players, shapeNames}) {
   const [playerId, setPlayerId] = React.useState('');
   const [gamePlayers, setGamePlayers] = React.useState(players)
-  console.log("the players", players);
+  console.log("The players isn the room", players);
 
   const handleChange = (event) => {
     setPlayerId(event.target.value);
@@ -32,7 +32,7 @@ export default function SelectLabels({players, shapeNames}) {
          <MenuItem value="">
             <em>None</em>
         </MenuItem>
-            {gamePlayers.map((index,key) => {
+            {gamePlayers?.map((index,key) => {
               return(
                 <MenuItem key={key} value={index}>{index}</MenuItem>
               )   
