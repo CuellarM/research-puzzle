@@ -7,6 +7,7 @@ import Tabs from "./TabLocal";
 import SelectPlayer from "./components/customSelect/SelectPlayer";
 import { SpriteRequestAlert } from "./components/alert/SpriteAlert";
 import { PLAYER_PLAYS_CACHE } from "./constants/Constants";
+import { shapeSvg, shapeSvg1, svgImage } from "./images";
 
 const MainGame = ({newGameSprite, playersInRoom, playerName, roomId}) => {
   const history = useNavigate();
@@ -415,7 +416,26 @@ const MainGame = ({newGameSprite, playersInRoom, playerName, roomId}) => {
       }
     });
   };
+
+
+  function SvgWrapper({ svg, name, id }) {
+    return (
+      <div
+        className="pieceShape"
+        draggable={true}
+        onDragStart={(e) => handleDragStart(e, id)}
+        onClick={handleShapeClick}
+        onDrop={handleDrop}
+      >
+        <div dangerouslySetInnerHTML={{ __html: svg }} />
+        <span className="shape-text">{name}</span>
+      </div>
+    );
+  }
   
+  let shapelist = [];
+  shapelist.push(shapeSvg);
+  shapelist.push(shapeSvg1);
 
   return (
     <div className="container">
@@ -431,7 +451,20 @@ const MainGame = ({newGameSprite, playersInRoom, playerName, roomId}) => {
       <div className="keep-right">
         <div id="gameBox" className="main-game-box"></div>
         <div id="shape" className="shape">
-      {newGameSprite?.map((shape, index) => (
+        {/* <SvgWrapper
+        key="key"
+        svg={svgImage}
+        name="key"
+        id="key"
+      /> */}
+      {
+        // shapelist?.map((shape, index) => (
+        //   <div key={shape?.name} title={shape?.name} id={shape?.name} name={shape?.name} draggable={true} onClick={handleShapeClick} onDragStart={(e) => handleDragStart(e, shape.id)} onDrop={(e) =>handleDrop(e)}> 
+        //   <div dangerouslySetInnerHTML={{ __html: shape?.svg }} />
+        //     <span className="shape-text">{shape?.name}</span>
+        //   </div>
+        // ))
+      newGameSprite?.map((shape, index) => (
         <div
           key={shape?.name}
           title={shape?.name}
@@ -455,7 +488,8 @@ const MainGame = ({newGameSprite, playersInRoom, playerName, roomId}) => {
           onDrop={(e) =>handleDrop(e)}
         ><span className="shape-text">{shape?.name}</span>
         </div>
-      ))}
+      ))
+      }
       {
         requestedObject?.map((shape, index) => (
           <div

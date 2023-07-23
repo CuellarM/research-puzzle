@@ -33,8 +33,8 @@ const SelectPlayer = ({ playerObject, handleRequest }) => {
     setSelectedObject('');
   };
 
-  const keys = players.map(item => Object.keys(item)[0]);
-  const objects = selectedKey ? players.find(item => Object.keys(item)[0] === selectedKey)[selectedKey] : [];
+  const keys = players?.map(item => Object.keys(item)[0]);
+  const objects = selectedKey ? players?.find(item => Object.keys(item)[0] === selectedKey)[selectedKey] : [];
   console.log('teh objects', objects);
 
   return (
@@ -43,7 +43,7 @@ const SelectPlayer = ({ playerObject, handleRequest }) => {
         <label htmlFor="key-select">Select Player:</label>
         <select id="key-select" value={selectedKey} onChange={handleKeyChange}>
           <option value="">-- Select a player --</option>
-          {keys.map(key => (
+          {keys?.map(key => (
             <option key={key} value={key}>{key}</option>
           ))}
         </select>
