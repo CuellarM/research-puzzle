@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -7,16 +8,9 @@ import Tabs from "./TabLocal";
 import SelectPlayer from "./components/customSelect/SelectPlayer";
 import { SpriteRequestAlert } from "./components/alert/SpriteAlert";
 import { PLAYER_PLAYS_CACHE } from "./constants/Constants";
-import { shapeSvg, shapeSvg1, svgImage } from "./images";
+import { shapeSvg, shapeSvg1 } from "./images";
 
 const MainGame = ({newGameSprite, playersInRoom, playerName, roomId}) => {
-  const history = useNavigate();
-
-  const tabTitles = [
-    { id: 'tab1', title: 'Tab 1', content: 'Content for Tab 1' },
-    { id: 'tab2', title: 'Tab 2', content: 'Content for Tab 2' },
-    { id: 'tab3', title: 'Tab 3', content: 'Content for Tab 3' },
-  ];
 
   const [playerId, setPlayerId] = useState("");
   const [otherPlayerValues, setOtherPlayerValues] = useState([]);
