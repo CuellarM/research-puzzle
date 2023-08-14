@@ -41,6 +41,10 @@
   height: 100%;
 }
 
+.mirrored {
+  transform: scaleX(-1);
+}
+
 
    .game-view-container {
     margin-left: 10%;

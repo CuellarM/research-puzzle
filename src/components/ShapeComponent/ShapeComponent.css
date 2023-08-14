@@ -1,0 +1,16 @@
+.svg-container svg {
+    pointer-events: none;
+  }
+
+  .shape-text {
+    margin-top: 15%;
+    align-self: center;
+    position: absolute;
+    color: black;
+  }
+
+  .svg-containerImg {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }

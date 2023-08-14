@@ -28,7 +28,6 @@ export default function TestBox() {
     ]);
   
     function handleDragStart(e, id) {
-      console.log('the id', id);
       e.dataTransfer.setData('text/plain', id);
     }
   
@@ -166,8 +165,6 @@ export default function TestBox() {
             onDragOver={handleDragOver}
             onDrop={handleDrop}
           >
-            {console.log("hey")}
-            {console.log("the shapes", shapes)}
             {shapes.map((shape, index) => {
                 const ShapeComponent = shape.shape === "circle" ? Circle : Square;
                 return(
@@ -186,7 +183,6 @@ export default function TestBox() {
                 onDrag={(event) => handleDrag(event, shape.id)}
                 onMouseOver={() => console.log("attah")}
               >
-                {console.log("shsh", shape.element)}
                 {/* {shape.type === "green" && <Circle color={shape.color}  />}
                 {shape.type === "square" && <Square color={shape.color} />} */}
                 <ShapeComponent color={shape.color} />

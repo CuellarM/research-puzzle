@@ -1,11 +1,86 @@
 .container {
   display: flex;
-  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+  /* align-items: center;
   width: 100%;
-  height: 100%;
+  height: 100%; */
 }
 
+.container-box {
+  width: 200px;
+  height: 200px;
+}
+
+.game-box-container {
+  border: 10px solid black; 
+  border-radius: 5%;
+  border-image: repeating-linear-gradient(
+    45deg, 
+    black,
+    black 10px,
+    #fff 10px,
+    #fff 20px
+  );
+  
+  border-image-slice: 4;
+}
+
+.box {
+  width: 200px;
+  height: 200px;
+  border: 10px solid black; 
+  border-radius: 5%;
+  border-image: repeating-linear-gradient(
+    45deg, 
+    black,
+    black 10px,
+    #fff 10px,
+    #fff 20px
+  );
+  
+  border-image-slice: 4;
+  /* border-image: repeating-linear-gradient(
+    45deg, 
+    black,
+    black 10px, 
+    #fff 10px,
+    #fff 20px
+  ); */
+}
+
+.list-container {
+  overflow: hidden;
+  z-index: 1;
+
+  position: absolute;
+  /* left: 50%; */
+  transform: translateX(20%);
+}
+
+.list {
+  overflow: auto;
+  display: flex;
+
+  flex-wrap: nowrap;
+  width: 600px;
+}
+
+.list-item {
+  /* Take full width */
+  z-index: 1;
+  width: 300px;
+}
+
+/* .box:last-child {
+  margin-right: 0;
+} */
+
 .right{
+  width: 50%;
+}
+
+.left{
   width: 50%;
 }
 
@@ -53,12 +128,20 @@
     width: 100%;
     height: 40px;
     background-color: #ccc; */
-    position: absolute;
+    /* position: absolute;
     bottom: 0;
     margin-bottom: 20px;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    
+    /* left: 50%; */
+    /* transform: translateX(20%); */ 
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 20vh;
   }
   
   .triangle {

@@ -1,36 +1,73 @@
 /* eslint-disable react/prop-types */
-import React, {useState, useEffect} from "react";
-import "./GameView.css";
+import React, {useState, useEffect, useCallback} from "react";
+import shapeA1 from "./puzzle-svgs/shape-A1.svg";
+import shapeA2 from "./puzzle-svgs/shape-A2.svg";
+import shapeA3 from "./puzzle-svgs/shape-A3.svg";
+import shapeA4 from "./puzzle-svgs/shape-A4.svg";
+import shapeB1 from "./puzzle-svgs/shape-B1.svg";
+import shapeB2 from "./puzzle-svgs/shape-B2.svg";
+import shapeB3 from "./puzzle-svgs/shape-B3.svg";
+import shapeB4 from "./puzzle-svgs/shape-B4.svg";
+import shapeB5 from "./puzzle-svgs/shape-B5.svg";
+import shapeB6 from "./puzzle-svgs/shape-B6.svg";
 
-const GameView = ({ playerObjects }) => {
+import "./GameView.css";
+import { Tooltip } from "react-tooltip";
+
+const GameView = ({ playerObjects, gameViewRef }) => {
   const [playerValues, setPlayerValues] = useState([]);
 
   useEffect(() => {
     setPlayerValues(playerObjects)
   }, [playerObjects])
   
+
+  const SVGS = {
+    'shapeA1': shapeA1,
+    'shapeA2': shapeA2,
+    'shapeA3': shapeA3,
+    'shapeA4': shapeA4,
+    'shapeB1': shapeB1,
+    'shapeB2': shapeB2,
+    'shapeB3': shapeB3,
+    'shapeB4': shapeB4,
+    'shapeB5': shapeB5,
+    'shapeB6': shapeB6
+  }
+
+const getSyncedPosition = useCallback(
+  (pos) => {
+    const rect = gameViewRef.current.getBoundingClientRect();
+    return {
+      x: (pos?.x + rect?.x) - 180,
+      y: (rect?.y + pos?.y) - 85
+    }
+  },
+  [gameViewRef]
+);
+
 function renderDroppedShapes() {
   return playerValues?.map((shape) => {
+    console.log("the shape stauff", shape)
+    if(JSON.stringify(shape) === '{}'){
+      return;
+    }
+
+    if(!Object.prototype.hasOwnProperty.call(shape, 'shapeUri')){
+      return;
+    }
+
+    const shapePath = SVGS[shape?.shapeUri];
+
+    const syncedPosition = getSyncedPosition(shape);
+
     return (
-      <div
-        key={shape.id}
-        className={`shape ${shape.shape}`}
-        style={{
-          borderColor: shape.borderColor,
-          borderWidth: shape.borderWidth,
-          width: 0,
-          height: 0,
-          borderStyle: "solid",
-          position: "absolute",
-          justifyContent: "center",
-          alignItems: "center",
-          left: shape.position?.x ? `${shape.position.x + 50}px` : shape.left,
-          top: shape.position?.y ? `${shape.position.y + 50}px` : shape.top,
-          transform: shape.transfrom
-        }}
-        id={shape.id}
-      >
-       <span className="shape-text">{shape.name}</span>
+      <div key={shape?.shapeUri} style={{position: 'absolute', left: `${syncedPosition?.x}px`, top: `${syncedPosition?.y}px`, transform: `rotate(${shape?.angle}deg)`}}>
+        <img src={shapePath} id={shape?.shapeUri} className="shape-piece" width="58%" height="58%" />
+        <a className="shape-text"         
+        key={shape?.shapeUri}
+        data-tooltip-id="my-tooltip"
+        data-tooltip-content={shape?.shapeUri}>🤔</a>
       </div>
     );
   });
@@ -38,11 +75,12 @@ function renderDroppedShapes() {
 
 
   return (
-    <div className="game-view-container">
-      <div id="remoteGameBox" className="box">
+      <div>
         {renderDroppedShapes()}
+        <Tooltip
+          id="my-tooltip"
+        />
       </div>
-    </div>
   );
 };
 

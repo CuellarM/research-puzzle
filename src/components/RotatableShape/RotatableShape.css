@@ -1,0 +1,6 @@
+/* styles.css or your custom CSS file */
+
+.backdrop-no-pointer-events {
+    pointer-events: none;
+  }
+  

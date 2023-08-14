@@ -1,0 +1,1 @@
+export {shapeA1} from "./shape-A1.svg"

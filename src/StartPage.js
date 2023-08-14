@@ -22,7 +22,6 @@ const StartPage = () =>  {
         if(newGameSprite !== null){
             setShowMainGame(true);
         }
-        console.log('show main agme', showMainGame);
       }, [newGameSprite])
 
     const handleJoinRoom = () => {

@@ -1,11 +1,15 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
 
-const SelectPlayer = ({ playerObject, handleRequest }) => {
+const SelectPlayer = ({ playerObject, handleRequest, playerName }) => {
   const [players, setPlayers] = useState([]);
 
+  console.log("the player object", playerObject)
+
   useEffect(() => {
-    setPlayers(playerObject);
+    if(playerObject != undefined){
+      setPlayers(playerObject);
+    }
   }, [playerObject]);
 
   const [selectedKey, setSelectedKey] = useState('');
@@ -33,8 +37,15 @@ const SelectPlayer = ({ playerObject, handleRequest }) => {
     setSelectedObject('');
   };
 
-  const keys = players?.map(item => Object.keys(item)[0]);
-  const objects = selectedKey ? players?.find(item => Object.keys(item)[0] === selectedKey)[selectedKey] : [];
+  const keys = players
+  ?.filter(item => Object?.keys(item)?.[0] !== playerName)
+  ?.map(item => Object?.keys(item)?.[0]);
+
+  console.log("teh selected key", selectedKey, players)
+  //const objects = selectedKey ? players?.find(item => Object?.keys(item)?.[0] === selectedKey)[selectedKey] : [];
+  const objects = selectedKey ? players
+  ?.filter(item => selectedKey in item) // Filter objects that have the desired key
+  .map(item => item[selectedKey]) : []; 
   console.log('teh objects', objects);
 
   return (
@@ -51,9 +62,11 @@ const SelectPlayer = ({ playerObject, handleRequest }) => {
         <label htmlFor="value-select">Select Piece:</label>
         <select id="value-select" value={selectedObject} onChange={handleObjectChange}>
           <option value="">-- Select a piece --</option>
-          {objects[0]?.map(obj => (
-            <option key={obj.id} value={obj.name}>{obj.name}</option>
-          ))}
+          {objects?.[0]?.map(obj => {
+            if(obj?.shapeUri){
+              return <option key={obj?.id} value={obj?.shapeUri}>{obj?.shapeUri}</option>
+            }
+})}
         </select>
       </div>
 

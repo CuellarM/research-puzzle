@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./AnotherTest.css";
 import { playerSocket } from "./service/ConnectSocket";
@@ -8,7 +8,12 @@ import Tabs from "./TabLocal";
 import SelectPlayer from "./components/customSelect/SelectPlayer";
 import { SpriteRequestAlert } from "./components/alert/SpriteAlert";
 import { PLAYER_PLAYS_CACHE } from "./constants/Constants";
-import { shapeSvg, shapeSvg1 } from "./images";
+import { shapeSvg, shapeSvg1, shapeSvg3, shapeSvg2 } from "./images";
+import image from './puzzle-svgs/shape1.svg'
+import ShapeComponent from "./components/ShapeComponent/ShapeComponent";
+import GameWorld from "./components/GameWorld/GameWorld";
+import { Tooltip } from "react-tooltip";
+import AlertModal from "./components/alert/AlertModal";
 
 const MainGame = ({newGameSprite, playersInRoom, playerName, roomId}) => {
 
@@ -17,26 +22,39 @@ const MainGame = ({newGameSprite, playersInRoom, playerName, roomId}) => {
   const [removeName, setRemoveName] = useState('');
   const [droppedShapes, setDroppedShapes] = useState([]);
   const [requestedObject, setRequestedObject] = useState([]);
+  const [movedShape, setMovedShape] = useState({});
+
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [requestObject, setRequestObject] = useState({});
+
+  const targetDropRef = useRef(null);
+
+  useEffect(() => {
+    emitSpritePositionToOtherPlayers(movedShape, false);
+  }, [movedShape])
 
 
 
   // this removes the shape and passes it on to the requesting player
   const handleRemoveShape = (shapeName, requestingPlayer, gameSprites) => {
-      const shapeElement = document.getElementsByName(shapeName)?.[0];
-      if (!shapeElement) {
+    console.log("thee doumcnrts", document);
+    console.log("the shapes",shapeName, document.getElementById(shapeName))
+      const shapeElement = document.getElementById(shapeName);
+      if (!shapeElement && !shapeElement?.classList?.contains('inbox')) {
         console.error(`Shape element with ID '${shapeName}' not found.`);
         return;
       }
     
       const parentElement = shapeElement.parentNode;
-      if (!parentElement || parentElement.id !== "gameBox") {
-        console.error(`Shape element is not a direct child of 'gameBox'.`);
-        return;
-      }
+      // if (!parentElement || parentElement.id !== "gameBox") {
+      //   console.error(`Shape element is not a direct child of 'gameBox'.`);
+      //   return;
+      // }
     
       parentElement.removeChild(shapeElement);
+      console.log("the game sprites", gameSprites)
 
-      const playerObject = gameSprites.find((obj) => obj.name === shapeName);
+      const playerObject = gameSprites.find((obj) => obj?.shapeUri === shapeName);
       if(playerObject){
         playerSocket.emit('sendToRequestingPlayer', requestingPlayer, playerObject);
         emitSpritePositionToOtherPlayers(playerObject, true);
@@ -51,8 +69,16 @@ const MainGame = ({newGameSprite, playersInRoom, playerName, roomId}) => {
 
   // Listening if anyone has requested from you
   useEffect(() => {
+    console.log("here for request")
     playerSocket.on('spriteRequest', (requestingPlayer, spriteName) => {
-      SpriteRequestAlert(spriteName, requestingPlayer, newGameSprite, handleRemoveShape);
+      console.log("there is a request")
+      setModalOpen(true);
+      setRequestObject({
+        spriteName: spriteName,
+        playerName: requestingPlayer,
+        gameSprites: newGameSprite
+      })
+      //SpriteRequestAlert(spriteName, requestingPlayer, newGameSprite, handleRemoveShape);
     });
   }, [playerSocket])
 
@@ -68,6 +94,7 @@ const MainGame = ({newGameSprite, playersInRoom, playerName, roomId}) => {
       }
     
       // If the object doesn't exist, add it to the array
+      newGameSprite = [...newGameSprite, spriteObject]
       return [...prevObjects, spriteObject];
     });
   }
@@ -95,12 +122,6 @@ const MainGame = ({newGameSprite, playersInRoom, playerName, roomId}) => {
       setPlayerId(playerName);
     }, [playerName])
 
-    // useEffect(() => {
-    //   playerSocket.on('playerValues', (playerId, values) => {
-    //     console.log("received", playerId, values)
-    //     setOtherPlayerValues(values);
-    //   });
-    // }, [playerSocket, playerName])
 
     console.log('the dropped', droppedShapes)
     console.log('the removed sprite', newGameSprite)
@@ -120,12 +141,6 @@ const MainGame = ({newGameSprite, playersInRoom, playerName, roomId}) => {
     }
 
     const hasFormedLargerTriangle = (shapes) => {
-        console.log('shapes length', shapes.length)
-        if (shapes.length !== initialShapes.length) {
-            console.log('agggg')
-          return false;
-        }
-      
         // Calculate the center of mass of the vertices
         const centerOfMass = shapes.reduce(
           (acc, shape) => {
@@ -165,45 +180,6 @@ const MainGame = ({newGameSprite, playersInRoom, playerName, roomId}) => {
       
 
     const snapThreshold = 15;
-
-    const initialShapes = [
-      {
-        id: "blue",
-        name: "A1",
-        shape: "triangle",
-        borderColor: "transparent transparent #0074D9 transparent",
-        borderWidth: "0 50px 86.6px 50px",
-        transform: "translateY(43.3px)",
-        vertices: [],
-      },
-      {
-        id: "red",
-        name: "A2",
-        shape: "triangle",
-        borderColor: "transparent transparent #FF4136 transparent",
-        borderWidth: "0 90px 106.6px 10px",
-        transform: "translateY(43.3px) rotate(180deg) translateY(-43.3px)",
-        vertices: [],
-      },
-      {
-        id: "green",
-        name: "A3",
-        shape: "triangle",
-        borderColor: "transparent transparent #2ECC40 transparent",
-        borderWidth: "0 50px 86.6px 50px",
-        transform: "translateY(43.3px) rotate(240deg) translateY(-43.3px)",
-        vertices: [],
-      },
-      {
-        id: "purple",
-        name: "A4",
-        shape: "triangle",
-        borderColor: "#B10DC9 transparent transparent transparent",
-        borderWidth: "86.6px 50px 0 50px",
-        transform: "",
-        vertices: [],
-      },
-    ];
   
   const [selectedShape, setSelectedShape] = useState(null);
   const collisionThreshold = 5; // Adjust this value as needed
@@ -237,8 +213,6 @@ const MainGame = ({newGameSprite, playersInRoom, playerName, roomId}) => {
   
       const newVertices = calculateVertices(selectedShape, newLeft, newTop);
       const selectedShapeIndex = droppedShapes.findIndex((shape) => shape.id === selectedShape.id);
-
-      console.log('th shape index', selectedShapeIndex);
   
       const isColliding = droppedShapes.some((otherShape, index) => {
         if (index === selectedShapeIndex) return false;
@@ -281,6 +255,7 @@ const MainGame = ({newGameSprite, playersInRoom, playerName, roomId}) => {
   
 
   const handleShapeClick = (e) => {
+    console.log(e);
     setSelectedShape(e.target);
   };
 
@@ -330,15 +305,6 @@ const MainGame = ({newGameSprite, playersInRoom, playerName, roomId}) => {
     return vertices;
   }
 
-  useEffect(() => {
-    // Check if the shapes form a larger triangle
-    const hasFormedTriangle = hasFormedLargerTriangle(droppedShapes);
-    if (hasFormedTriangle) {
-      console.log("The pieces have come together to form a larger triangle!");
-    }else {
-        console.log("The pieces have not yet formed a larger triangle.");
-      }
-  }, [droppedShapes]);
 
   const handleDrop = (e) => {
     console.log("new gane sprite", newGameSprite)
@@ -410,109 +376,59 @@ const MainGame = ({newGameSprite, playersInRoom, playerName, roomId}) => {
       }
     });
   };
-
-
-  function SvgWrapper({ svg, name, id }) {
-    return (
-      <div
-        className="pieceShape"
-        draggable={true}
-        onDragStart={(e) => handleDragStart(e, id)}
-        onClick={handleShapeClick}
-        onDrop={handleDrop}
-      >
-        <div dangerouslySetInnerHTML={{ __html: svg }} />
-        <span className="shape-text">{name}</span>
-      </div>
-    );
-  }
   
   let shapelist = [];
   shapelist.push(shapeSvg);
   shapelist.push(shapeSvg1);
+  shapelist.push(shapeSvg2);
+  shapelist.push(shapeSvg3);
 
   return (
     <div className="container">
       <div className="left">
-      <Tabs playerName={playerName} />
-        <div>
-          <h2>Request shapes from players</h2>
-          <SelectPlayer playerObject={playersInRoom} handleRequest={handleSpriteRequestToPlayer}/>
-        </div>
+        {/* for local testing */}
+      {/* <Tabs playerName={playerName} movedPlayer={movedShape}/> */}
+        <Tabs playerName={playerName}/>
       </div>
-      <div className="divider"></div>
+
       <div className="right">
-      <div className="keep-right">
-        <div id="gameBox" className="main-game-box"></div>
-        <div id="shape" className="shape">
-        {/* <SvgWrapper
-        key="key"
-        svg={svgImage}
-        name="key"
-        id="key"
-      /> */}
-      {
-        // shapelist?.map((shape, index) => (
-        //   <div key={shape?.name} title={shape?.name} id={shape?.name} name={shape?.name} draggable={true} onClick={handleShapeClick} onDragStart={(e) => handleDragStart(e, shape.id)} onDrop={(e) =>handleDrop(e)}> 
-        //   <div dangerouslySetInnerHTML={{ __html: shape?.svg }} />
-        //     <span className="shape-text">{shape?.name}</span>
-        //   </div>
-        // ))
-      newGameSprite?.map((shape, index) => (
-        <div
-          key={shape?.name}
-          title={shape?.name}
-          className="pieceShape"
-          name={shape?.name}
-          style={{
-            borderColor: shape?.borderColor,
-            backgroundColor: shape?.color,
-            borderWidth: shape?.borderWidth,
-            justifyContent: "center",
-            alignItems: "center",
-            width: 0,
-            height: 0,
-            borderStyle: "solid",
-            position: "relative",
-          }}
-          id={shape?.name}
-          draggable={true}
-          onDragStart={(e) => handleDragStart(e, shape.id)}
-          onClick={handleShapeClick}
-          onDrop={(e) =>handleDrop(e)}
-        ><span className="shape-text">{shape?.name}</span>
+      <div>
+        <div id="gameBox" ref={targetDropRef}>
+        <GameWorld id={"gameBox-main"}/>
         </div>
-      ))
+        <div id="shape" className="shape">
+    
+      {
+        newGameSprite?.map((shape, index) => (
+          <ShapeComponent 
+              key={index} 
+              shape={shape} 
+              handleShapeClick={handleShapeClick} 
+              handleDragStart={(e, data) => handleDragStart(e,data)}  
+              theRef={targetDropRef} 
+              shapeUri={shape?.shapeUri}
+              setMovedShape={setMovedShape}
+          />
+        ))
       }
       {
         requestedObject?.map((shape, index) => (
-          <div
-            key={shape?.name}
-            title={shape?.name}
-            className="pieceShape"
-            name={shape?.name}
-            style={{
-              borderColor: shape?.borderColor,
-              backgroundColor: shape?.color,
-              borderWidth: shape?.borderWidth,
-              justifyContent: "center",
-              alignItems: "center",
-              width: 0,
-              height: 0,
-              borderStyle: "solid",
-              position: "relative",
-            }}
-            id={shape?.name}
-            draggable={true}
-            onDragStart={(e) => handleDragStart(e, shape?.id)}
-            onClick={handleShapeClick}
-            onDrop={(e) =>handleDrop(e)}
-          ><span className="shape-text">{shape?.name}</span>
-          </div>
+          <ShapeComponent 
+            key={index} 
+            shape={shape} 
+            handleShapeClick={handleShapeClick} 
+            handleDragStart={(e, data) => handleDragStart(e,data)}  
+            theRef={targetDropRef} 
+            shapeUri={shape?.shapeUri}
+            setMovedShape={setMovedShape}
+          />
         ))
       }
+        <Tooltip
+          id="my-tooltip"
+        />
       </div>
-        {/* <PlayShapes /> */}
+      <AlertModal  isOpen={isModalOpen} setModalOpen={setModalOpen} requestObject={requestObject} handleRemoveShape={handleRemoveShape}/>
       </div>
       </div>
     </div>
