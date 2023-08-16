@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { ProgressBar } from  'react-loader-spinner'
 import { playerSocket } from "./service/ConnectSocket";
 import MainGame from "./MainGame";
 
@@ -9,29 +10,58 @@ const StartPage = () =>  {
     const [newGameSprite, setNewGameSprite] = useState(null);
     const [playersInRoom, setPlayersInRoom] = useState([]);
     const [showMainGame, setShowMainGame] = useState(false);
+    const [showLoading, setShowLoading] = useState(false);
 
     useEffect(() => {
         playerSocket.on('newGameSprite', (newSpriteObject) => {
-          setNewGameSprite(newSpriteObject?.playerSprites[0]);
+          setAllGameSprites(newSpriteObject?.playerSprites[0]);
           setPlayersInRoom(newSpriteObject?.players);
         });
       }, [playerSocket])
 
+
+
+
+  function compareAndMergeArrays(arrayA, arrayB) {
+    const idsInArrayA = arrayA.map(objA => objA.shapeUri);
+    const uniqueObjectsB = arrayB.filter(objB => !idsInArrayA.includes(objB.shapeUri));
+
+    const mergedArray = [...arrayA, ...uniqueObjectsB];
+
+    return mergedArray;
+  }
+
+      const setAllGameSprites = (sprites) => {
+        const localStorageKey = localStorage.getItem("playerCacheName");
+          const playerCachedSprites = JSON.parse(localStorage.getItem(localStorageKey));
+          if(playerCachedSprites != null || !playerCachedSprites?.length < 1){
+            const cachedObjects = compareAndMergeArrays(playerCachedSprites, sprites);
+            setNewGameSprite(cachedObjects);
+          }else{
+            setNewGameSprite(sprites)
+          }
+      }
+
     
       useEffect(() => {
         if(newGameSprite !== null){
+          setTimeout(() => {
+            setShowOverlay(false);
             setShowMainGame(true);
+          }, 5000)
+
         }
       }, [newGameSprite])
 
     const handleJoinRoom = () => {
+        localStorage.setItem('playerCacheName', playerName+roomId)
         playerSocket.emit('registerPlayer', playerName)
         playerSocket.emit('joinRoom', roomId);
       };
 
     const handleStartGame = () => {
         handleJoinRoom();
-        setShowOverlay(false);
+        setShowLoading(true);
       };
 
       const handlePlayerNameChange = (event) => {
@@ -70,14 +100,28 @@ const StartPage = () =>  {
           <button
             onClick={handleStartGame}     
             //{handleStartGame}
-            disabled={!playerName&&!roomId}
+            disabled={(!playerName&&!roomId) || showLoading}
           >
             Start Game
           </button>
             </div>
           )}
+          {showLoading && !showMainGame && 
+            <div>
+                        <ProgressBar
+            height="80"
+            width="100px"
+            ariaLabel="progress-bar-loading"
+            wrapperStyle={{}}
+            wrapperClass="progress-bar-wrapper"
+            borderColor = '#F4442E'
+            barColor = '#51E5FF'
+          />
+          <p>Loading all game assets...</p>
+              </div>
+          }
           {
-            showMainGame && <MainGame newGameSprite={newGameSprite} playersInRoom={playersInRoom} playerName={playerName} roomId={roomId}/>
+            showMainGame && <MainGame gameObjects={newGameSprite} playersInRoom={playersInRoom} playerName={playerName} roomId={roomId}/>
           }
           </div>
     )

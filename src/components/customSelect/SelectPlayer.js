@@ -4,8 +4,6 @@ import React, { useEffect, useState } from 'react';
 const SelectPlayer = ({ playerObject, handleRequest, playerName }) => {
   const [players, setPlayers] = useState([]);
 
-  console.log("the player object", playerObject)
-
   useEffect(() => {
     if(playerObject != undefined){
       setPlayers(playerObject);
@@ -28,8 +26,6 @@ const SelectPlayer = ({ playerObject, handleRequest, playerName }) => {
 
   const handleButtonRequest = () => {
     // Perform the request or any desired action with the selected key and object
-    console.log('Key:', selectedKey);
-    console.log('Object:', selectedObject);
     handleRequest(selectedKey, selectedObject);
 
     //disable select button
@@ -41,12 +37,10 @@ const SelectPlayer = ({ playerObject, handleRequest, playerName }) => {
   ?.filter(item => Object?.keys(item)?.[0] !== playerName)
   ?.map(item => Object?.keys(item)?.[0]);
 
-  console.log("teh selected key", selectedKey, players)
   //const objects = selectedKey ? players?.find(item => Object?.keys(item)?.[0] === selectedKey)[selectedKey] : [];
   const objects = selectedKey ? players
   ?.filter(item => selectedKey in item) // Filter objects that have the desired key
-  .map(item => item[selectedKey]) : []; 
-  console.log('teh objects', objects);
+  .map(item => item[selectedKey]) : [];
 
   return (
     <div>

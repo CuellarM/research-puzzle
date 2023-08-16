@@ -48,7 +48,6 @@ const getSyncedPosition = useCallback(
 
 function renderDroppedShapes() {
   return playerValues?.map((shape) => {
-    console.log("the shape stauff", shape)
     if(JSON.stringify(shape) === '{}'){
       return;
     }

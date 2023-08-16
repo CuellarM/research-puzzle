@@ -37,7 +37,6 @@ export default function TestBox() {
   
     function handleDrop(e) {
       e.preventDefault();
-      console.log('the e', e.dataTransfer.getData('text'));
       const shapeId = e.dataTransfer.getData('text');
       const shape = document.getElementById(shapeId);
       const box = e.target;

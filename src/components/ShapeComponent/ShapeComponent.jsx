@@ -17,7 +17,7 @@ import Draggable from 'react-draggable';
 
 import { Tooltip } from 'react-tooltip'
 
-function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, shapeUri, setMovedShape }){
+function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, shapeUri, setMovedShape, addOrUpdate }){
   const [activeDrags, setActiveDrag] = useState(0);
   const [deltaPosition, setDeltaPosition] = useState({x:0, y:0});
   const [initialPos, setInitialPos] = useState({x: 0, y: 0});
@@ -78,6 +78,21 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
     
       return false;
     }
+
+    const setForLocalStorage = (id, angle, shapeUri) => {
+      const obj = {
+        id,
+        x: draggableRef.current.state.x,  
+        y: draggableRef.current.state.y,
+        angle,
+        shapeUri,
+        isRemoved: false,
+        isVisible: true
+      }
+
+      addOrUpdate(obj);
+    }
+
     const handleDraggableDrop = (e, data) => {
       setActiveDrag(activeDrags - 1);
 
@@ -103,6 +118,10 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
           angle: imgAngle?.angle || 0
         })
 
+        const theId = e?.target?.id || imgElement?.id;
+        const theAngle = imgAngle?.angle || 0;
+        setForLocalStorage(theId, theAngle,  e?.target?.id || imgElement?.id)
+
       } else{
         revertDrag();
       }
@@ -112,7 +131,6 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
         // Check if over valid drop zone
     const isOverDropZone = (x, y) => {
       const el = document.elementsFromPoint(x, y);
-      console.log("the el", el)
       let isDropZone = false;
       
       el?.forEach(value => {
@@ -150,10 +168,10 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
   
     return (
       <div id={shapeUri} >
-      <Draggable id={shapeUri} onDrag={handleDrag} {...dragHandlers} onStop={handleDraggableDrop} ref={draggableRef}>
+      <Draggable id={shapeUri} onDrag={handleDrag} {...dragHandlers} onStop={handleDraggableDrop} ref={draggableRef} defaultPosition={{x: shape?.x || 0, y: shape?.y || 0}}>
         <div className={`handle ${shapeUri} svg-containerImg`} ref={divRef}>
         <RotatableShape setImageAngle={setImgAngle}>
-        <img src={shapePath} id={shapeUri} className="shape-piece" width="58%" height="58%"/>
+        <img src={shapePath} id={shapeUri} className="shape-piece" width="68%" height="68%"/>
         <a className="shape-text"         
           key={shape?.shapeUri}
           data-tooltip-id="my-tooltip"
