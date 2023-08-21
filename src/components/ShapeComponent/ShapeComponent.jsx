@@ -21,6 +21,10 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
   const [activeDrags, setActiveDrag] = useState(0);
   const [deltaPosition, setDeltaPosition] = useState({x:0, y:0});
   const [initialPos, setInitialPos] = useState({x: 0, y: 0});
+  const [initialSize, setInitialSize] = useState({
+    width: 200,
+    height: 200
+  });
 
   const SVGS = {
     'shapeA1': shapeA1,
@@ -39,6 +43,7 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
 
   const draggableRef = useRef();
   const divRef = useRef();
+  const currDraggableRef = useRef();
 
 
   const onStart = () => {
@@ -95,13 +100,24 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
 
     const handleDraggableDrop = (e, data) => {
       setActiveDrag(activeDrags - 1);
+      // const {x,y} = e;
 
-      const {x,y} = e;
+      const {clientX, clientY} = e;
+
+      const x = clientX;
+      const y = clientY;
 
       if(isOverDropZone(x,y)){
         handleDrop(e);
         const rect = theRef.current.getBoundingClientRect();
         const shapeRect = divRef.current.getBoundingClientRect();
+
+        const scale = rect.width / initialSize.width;
+        const size = rect.width * 0.5;
+        setInitialSize({
+          width: initialSize.width * (scale /3),
+          height: initialSize.height * (scale/3)
+        })
 
         const mainBoxOffset = {
           x: theRef.current.clientLeft, 
@@ -110,12 +126,29 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
 
         const parentDiv = imgAngle?.eValue?.target.closest('div');
         const imgElement = parentDiv?.querySelector('.shape-piece');
+
+        const theDraggedShape = currDraggableRef.current;
+        const shapeInDrag = document.getElementById(e?.target?.id);
+
+        const theShapeDiv = data?.node;
+        const style = theShapeDiv?.style;
+        const translate = style?.transform;
+
+        // Split into components
+        const parts = translate?.slice(10, -1)?.split(', ');
+
+        // Extract x and y
+        const x = parseInt(parts?.[0]); // -62 
+        const y = parseInt(parts?.[1]); // -389
+      
         setMovedShape({
           id: e?.target?.id || imgElement?.id,
-          x: shapeRect.x - rect.left,
-          y: shapeRect.y - rect.top,
+          x: x,
+          y: y,
           shapeUri: e?.target?.id || imgElement?.id,
-          angle: imgAngle?.angle || 0
+          angle: imgAngle?.angle || 0,
+          width: rect?.width,
+          height: rect?.height
         })
 
         const theId = e?.target?.id || imgElement?.id;
@@ -151,31 +184,42 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
 
       const actualShape = document.getElementsByClassName(shapeId);
 
-      // if (!shape || !box) return;
+      if (!shape || !box) return;
 
-      // console.log("the shapes",actualShape?.[0]?.classList, document.getElementsByClassName(shapeId))
+      const theShapeDragged = currDraggableRef.current;
+      if (!theShapeDragged?.classList?.contains("inBox")) {
+        const theDraggedShape = currDraggableRef.current.firstChild;
+        const shapeDiv = document.createElement('div');
 
-      if (!actualShape?.[0]?.classList.contains("inBox")) {
-        // console.log("in list");
-        // console.log("the shape", shape.parentNode)
-        // shape.parentNode.removeChild(shape);
-        // if (actualShape.parentNode !== box) {
-        //   box.appendChild(shape);
-        // }
-        actualShape?.[0]?.classList.add("inBox");
+        shapeDiv.appendChild(theDraggedShape)
+        box.appendChild(shapeDiv);
+        shapeDiv.id = shapeId;
+        shapeDiv.ref = currDraggableRef;
+        // shapeDiv.style.position = "absolute";
+        const img = shapeDiv.querySelector('img');
+
+        const shapeEl = shapeDiv?.firstChild;
+
+        shapeEl.style.position = "absolute";
+
+        img?.classList?.add('inbox');
+
+        currDraggableRef.current.parentNode.removeChild(currDraggableRef.current); 
+        theShapeDragged?.classList.add("inBox");
       }
     }
   
     return (
-      <div id={shapeUri} >
+      <div id={shapeUri} ref={currDraggableRef}>
       <Draggable id={shapeUri} onDrag={handleDrag} {...dragHandlers} onStop={handleDraggableDrop} ref={draggableRef} defaultPosition={{x: shape?.x || 0, y: shape?.y || 0}}>
-        <div className={`handle ${shapeUri} svg-containerImg`} ref={divRef}>
+        <div className={`handle ${shapeUri} svg-containerImg`} ref={divRef} style={{position: "absolute"}}>
         <RotatableShape setImageAngle={setImgAngle}>
-        <img src={shapePath} id={shapeUri} className="shape-piece" width="68%" height="68%"/>
-        <a className="shape-text"         
+        <img src={shapePath} id={`${shapeUri}`} className="shape-piece" width={initialSize?.width} height={initialSize?.height}/>
+        <p className="shape-text" style={{color: "black", fontWeight: "bold"}}>{shape?.shapeUri}</p>
+        {/* <a className="shape-text"         
           key={shape?.shapeUri}
           data-tooltip-id="my-tooltip"
-          data-tooltip-content={shape?.shapeUri}>🤔</a>
+          data-tooltip-content={shape?.shapeUri}>🤔</a> */}
        {/* <span className="shape-text" style={{marginBottom: "100px"}}>{shapeUri}</span> */}
        </RotatableShape>
        </div>

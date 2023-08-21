@@ -12,7 +12,7 @@ const Tabs = ({ playerName, movedPlayer }) => {
   // { vert: [ {}, [Object], [Object], [Object] ] },
 
   //for local testing
-  //const thevals = [{"vert": [movedPlayer]}];
+  // const thevals = [{"vert": [movedPlayer]}];
 
   const [tabContent, setTabContent] = useState([]);
   const [playerValues, setPlayerValues] = useState([]);
@@ -62,6 +62,7 @@ const Tabs = ({ playerName, movedPlayer }) => {
   useEffect(() => {
     // Listen for playerValues events from other players
     playerSocket.on('playerValues', data => {
+      console.log("the dta", data);
       getActivePlayerTab(data);
       setPlayerValues(data);
       setIsPlayerValuesAvailable(true);

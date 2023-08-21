@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import React, {useState, useEffect, useCallback} from "react";
 import shapeA1 from "./puzzle-svgs/shape-A1.svg";
@@ -17,6 +18,7 @@ import { Tooltip } from "react-tooltip";
 const GameView = ({ playerObjects, gameViewRef }) => {
   const [playerValues, setPlayerValues] = useState([]);
 
+  console.log("y333 seei mu ooooh")
   useEffect(() => {
     setPlayerValues(playerObjects)
   }, [playerObjects])
@@ -38,9 +40,15 @@ const GameView = ({ playerObjects, gameViewRef }) => {
 const getSyncedPosition = useCallback(
   (pos) => {
     const rect = gameViewRef.current.getBoundingClientRect();
+    const xPct = pos?.x / pos?.width;
+    const yPct = pos?.y / pos?.height;
+
+    const size = rect.width * 0.5;
+
+    
     return {
-      x: (pos?.x + rect?.x) - 180,
-      y: (rect?.y + pos?.y) - 85
+      x: xPct,
+      y: yPct
     }
   },
   [gameViewRef]
@@ -61,8 +69,8 @@ function renderDroppedShapes() {
     const syncedPosition = getSyncedPosition(shape);
 
     return (
-      <div key={shape?.shapeUri} style={{position: 'absolute', left: `${syncedPosition?.x}px`, top: `${syncedPosition?.y}px`, transform: `rotate(${shape?.angle}deg)`}}>
-        <img src={shapePath} id={shape?.shapeUri} className="shape-piece" width="58%" height="58%" />
+      <div key={shape?.shapeUri} style={{position: 'absolute', transform: `translate(${shape?.x}px, ${shape?.y}px) rotate(${shape?.angle}deg)`}}>
+        <img src={shapePath} id={shape?.shapeUri} className="shape-piece" width="88%" height="88%" />
         <a className="shape-text"         
         key={shape?.shapeUri}
         data-tooltip-id="my-tooltip"
