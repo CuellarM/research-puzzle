@@ -28,6 +28,7 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [requestObject, setRequestObject] = useState({});
+  const [objectJustReceived, setObjectJustReceived] = useState({})
 
   //room + name => key
   const localStorageKey = playerName + roomId;
@@ -109,6 +110,14 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
 
   const handleRequestedSprites = (spriteObject) => {
     setRequestedObject(prevObjects => {
+
+      console.log("the prev object", spriteObject);
+      if(objectJustReceived?.shapeUri === spriteObject?.shapeUri){
+        return;
+      } else{
+        setObjectJustReceived({shapeUri: prevObjects?.shapeUri})
+      }
+
       // Check if the object already exists in the array
       const objectExists = prevObjects.some(obj => obj === spriteObject);
     
@@ -119,7 +128,7 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
     
       // If the object doesn't exist, add it to the array
       setGameObjects([...newGameSprite, spriteObject])
-      return [...prevObjects, spriteObject];
+      // return [...prevObjects, spriteObject];
     });
   }
 

@@ -84,11 +84,11 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
       return false;
     }
 
-    const setForLocalStorage = (id, angle, shapeUri) => {
+    const setForLocalStorage = (id, angle, shapeUri, x, y) => {
       const obj = {
         id,
-        x: draggableRef.current.state.x,  
-        y: draggableRef.current.state.y,
+        x: x,  
+        y: y,
         angle,
         shapeUri,
         isRemoved: false,
@@ -115,8 +115,8 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
         const scale = rect.width / initialSize.width;
         const size = rect.width * 0.5;
         setInitialSize({
-          width: initialSize.width * (scale /3),
-          height: initialSize.height * (scale/3)
+          width: initialSize.width * (scale /5),
+          height: initialSize.height * (scale/5)
         })
 
         const mainBoxOffset = {
@@ -153,7 +153,7 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
 
         const theId = e?.target?.id || imgElement?.id;
         const theAngle = imgAngle?.angle || 0;
-        setForLocalStorage(theId, theAngle,  e?.target?.id || imgElement?.id)
+        setForLocalStorage(theId, theAngle,  e?.target?.id || imgElement?.id, x, y)
 
       } else{
         revertDrag();

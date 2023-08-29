@@ -11,7 +11,11 @@ const StartPage = () =>  {
     const [playersInRoom, setPlayersInRoom] = useState([]);
     const [showMainGame, setShowMainGame] = useState(false);
     const [showLoading, setShowLoading] = useState(false);
+    const [selectedLevel, setSelectedLevel] = useState("");
 
+    const levels = [
+      "LEVEL 1", 'LEVEL 2'
+    ]
     useEffect(() => {
         playerSocket.on('newGameSprite', (newSpriteObject) => {
           setAllGameSprites(newSpriteObject?.playerSprites[0]);
@@ -97,6 +101,12 @@ const StartPage = () =>  {
             onChange={(e) => setRoomId(e.target.value)}
             placeholder="Game room"
           />
+        <select id="key-select" value={selectedLevel} onChange={(e) => setSelectedLevel(e.target.value)}>
+          <option value="">-- Select a game level--</option>
+          {levels?.map(key => (
+            <option key={key} value={key}>{key}</option>
+          ))}
+        </select>
           <button
             onClick={handleStartGame}     
             //{handleStartGame}

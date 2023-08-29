@@ -18,7 +18,6 @@ import { Tooltip } from "react-tooltip";
 const GameView = ({ playerObjects, gameViewRef }) => {
   const [playerValues, setPlayerValues] = useState([]);
 
-  console.log("y333 seei mu ooooh")
   useEffect(() => {
     setPlayerValues(playerObjects)
   }, [playerObjects])
@@ -70,7 +69,7 @@ function renderDroppedShapes() {
 
     return (
       <div key={shape?.shapeUri} style={{position: 'absolute', transform: `translate(${shape?.x}px, ${shape?.y}px) rotate(${shape?.angle}deg)`}}>
-        <img src={shapePath} id={shape?.shapeUri} className="shape-piece" width="88%" height="88%" />
+        <img src={shapePath} id={shape?.shapeUri} className="shape-piece" width="48%" height="48%" />
         <a className="shape-text"         
         key={shape?.shapeUri}
         data-tooltip-id="my-tooltip"

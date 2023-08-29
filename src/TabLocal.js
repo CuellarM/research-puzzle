@@ -8,7 +8,7 @@ import "./TabLocal.css"
 import GameWorld from './components/GameWorld/GameWorld';
 import SelectPlayer from './components/customSelect/SelectPlayer';
 
-const Tabs = ({ playerName, movedPlayer }) => {
+const Tabs = ({ playerName, movedPlayer, showSelect = true }) => {
   // { vert: [ {}, [Object], [Object], [Object] ] },
 
   //for local testing
@@ -62,7 +62,6 @@ const Tabs = ({ playerName, movedPlayer }) => {
   useEffect(() => {
     // Listen for playerValues events from other players
     playerSocket.on('playerValues', data => {
-      console.log("the dta", data);
       getActivePlayerTab(data);
       setPlayerValues(data);
       setIsPlayerValuesAvailable(true);
@@ -101,10 +100,14 @@ const Tabs = ({ playerName, movedPlayer }) => {
         })}
       </div>
       }
-        <div>
+      {
+        showSelect && (
+          <div>
           <h2>Request shapes from players</h2>
           <SelectPlayer playerObject={playerValues} handleRequest={handleSpriteRequestToPlayer} playerName={playerName}/>
         </div>
+        )
+      }
     </div>
   );
 };
