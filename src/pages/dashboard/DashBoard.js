@@ -1,46 +1,34 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useState } from "react";
 import { playerSocket } from "../../service/ConnectSocket";
 import DashboardMain from "./DashboardMain";
 
 const DashBoard = () =>  {
     const [showOverlay, setShowOverlay] = useState(true);
     const [roomId, setRoomId] = useState(null);
-    const [newGameSprite, setNewGameSprite] = useState(null);
-    const [playersInRoom, setPlayersInRoom] = useState([]);
+    // const [newGameSprite, setNewGameSprite] = useState(null);
+    // const [playersInRoom, setPlayersInRoom] = useState([]);
     const [showMainGame, setShowMainGame] = useState(false);
 
-    const PLAYER_NAME = "admin";
+    // useEffect(() => {
+    //     playerSocket.on('newGameSprite', (newSpriteObject) => {
+    //       setPlayersInRoom(newSpriteObject?.players);
+    //     });
 
-    useEffect(() => {
-        playerSocket.on('newGameSprite', (newSpriteObject) => {
-          setPlayersInRoom(newSpriteObject?.players);
-        });
-
-        playerSocket.on('playergroundObjects', (playGroundObjects) => {
-          console.log("the playerObjects", playGroundObjects);
-        })
-      }, [playerSocket])
-
-      const getPlayground = (roomId) => {
-        playerSocket.emit('getPlayground', roomId);
-      }
-
-      // const playGroundObjects = useMemo(() => {
-      //   if(roomId){
-      //       getPlayground(roomId);
-      //   }
-      // },[roomId]);
+    //     playerSocket.on('playergroundObjects', (playGroundObjects) => {
+    //       console.log("the playerObjects", playGroundObjects);
+    //     })
+    //   }, [playerSocket])
 
     
-      useEffect(() => {
-        if(newGameSprite !== null){
-          setTimeout(() => {
-            setShowOverlay(false);
-            setShowMainGame(true);
-          }, 5000)
+      // useEffect(() => {
+      //   if(newGameSprite !== null){
+      //     setTimeout(() => {
+      //       setShowOverlay(false);
+      //       setShowMainGame(true);
+      //     }, 5000)
 
-        }
-      }, [newGameSprite])
+      //   }
+      // }, [newGameSprite])
 
     const handleJoinRoom = () => {
         playerSocket.emit('registerAdmin', roomId);
