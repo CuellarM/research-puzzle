@@ -70,10 +70,11 @@ function renderDroppedShapes() {
     return (
       <div key={shape?.shapeUri} style={{position: 'absolute', transform: `translate(${shape?.x}px, ${shape?.y}px) rotate(${shape?.angle}deg)`}}>
         <img src={shapePath} id={shape?.shapeUri} className="shape-piece" width="48%" height="48%" />
-        <a className="shape-text"         
+        <p className="shape-text" style={{color: "black", fontWeight: "bold"}}>{shape?.shapeUri}</p>
+        {/* <a className="shape-text"         
         key={shape?.shapeUri}
         data-tooltip-id="my-tooltip"
-        data-tooltip-content={shape?.shapeUri}>🤔</a>
+        data-tooltip-content={shape?.shapeUri}>🤔</a> */}
       </div>
     );
   });
