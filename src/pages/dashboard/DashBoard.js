@@ -32,7 +32,7 @@ const DashBoard = () =>  {
 
     const handleJoinRoom = () => {
         playerSocket.emit('registerAdmin', roomId);
-        playerSocket.emit('joinRoom', roomId, true);
+        playerSocket.emit('joinRoom', roomId, true, '');
       };
 
     const handleStartGame = () => {

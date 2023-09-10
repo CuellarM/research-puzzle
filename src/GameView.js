@@ -53,6 +53,12 @@ const getSyncedPosition = useCallback(
   [gameViewRef]
 );
 
+const getBeforeHyphen = str => {
+  const regex = /^([^-]+)/;
+  const match = str.match(regex);
+  return match[1];
+}
+
 function renderDroppedShapes() {
   return playerValues?.map((shape) => {
     if(JSON.stringify(shape) === '{}'){
@@ -63,13 +69,53 @@ function renderDroppedShapes() {
       return;
     }
 
-    const shapePath = SVGS[shape?.shapeUri];
+    const shapePath = SVGS[getBeforeHyphen(shape?.shapeUri)];
 
     const syncedPosition = getSyncedPosition(shape);
+    const scale = 620/ 200;
+    const width =  200 * (scale /3);
+    const height = 200 * (scale/3);
+
+    const initialSize = {
+      width: 200 * (scale /3),
+      height: 200 * (scale/3)
+    }
+
+    const getDimensions = () => {
+      let height = initialSize?.height;
+      let width = initialSize?.width;
+
+      switch(getBeforeHyphen(shape?.shapeUri)){
+        case 'shapeA2':
+          height = initialSize?.height + 220;
+          width = initialSize?.width + 160;
+          break;
+        case 'shapeA1':
+          height = initialSize?.height + 150;
+          width = initialSize?.width + 150;
+          break;
+        case 'shapeA3':
+          height = initialSize?.height + 81;
+          width = initialSize?.width - 91;
+          break;
+        case 'shapeA4':
+          height = initialSize?.height + 90;
+          width = initialSize?.width - 10;
+          break;
+        default:
+          height = initialSize?.height;
+          width = initialSize?.width;
+      }
+
+      return {
+        height: height,
+        width: width
+      }
+    }
 
     return (
       <div key={shape?.shapeUri} style={{position: 'absolute', transform: `translate(${shape?.x}px, ${shape?.y}px) rotate(${shape?.angle}deg)`}}>
-        <img src={shapePath} id={shape?.shapeUri} className="shape-piece" width="48%" height="48%" />
+        <img src={shapePath} id={shape?.shapeUri} className="shape-piece" width={getDimensions()?.width} height={getDimensions()?.height} />
         <p className="shape-text" style={{color: "black", fontWeight: "bold"}}>{shape?.shapeUri}</p>
         {/* <a className="shape-text"         
         key={shape?.shapeUri}

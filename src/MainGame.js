@@ -119,7 +119,11 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
       }
 
       // Check if the object already exists in the array
-      const objectExists = prevObjects.some(obj => obj === spriteObject);
+      let objectExists = null;
+
+      if( typeof prevObjects === 'undefined'){
+        objectExists = prevObjects?.some(obj => obj === spriteObject);
+      }
     
       // If the object already exists, return the previous array
       if (objectExists) {
@@ -406,7 +410,7 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
   shapelist.push(shapeSvg3);
 
   return (
-    <div className="container">
+    <div className="body container">
       <div className="left">
         {/* for local testing */}
       {/* <Tabs playerName={playerName} movedPlayer={movedShape}/> */}

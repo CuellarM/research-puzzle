@@ -14,10 +14,12 @@ const StartPage = () =>  {
     const [selectedLevel, setSelectedLevel] = useState("");
 
     const levels = [
-      "LEVEL 1", 'LEVEL 2'
+      {"name":"Level 1",  "value":"LEVEL_1"}, 
+      {"name":"Level 2",  "value":"LEVEL_2"}
     ]
     useEffect(() => {
         playerSocket.on('newGameSprite', (newSpriteObject) => {
+          console.log('the new sprites', newSpriteObject)
           setAllGameSprites(newSpriteObject?.playerSprites[0]);
           setPlayersInRoom(newSpriteObject?.players);
         });
@@ -60,7 +62,7 @@ const StartPage = () =>  {
     const handleJoinRoom = () => {
         localStorage.setItem('playerCacheName', playerName+roomId)
         playerSocket.emit('registerPlayer', playerName)
-        playerSocket.emit('joinRoom', roomId);
+        playerSocket.emit('joinRoom', roomId, false, selectedLevel);
       };
 
     const handleStartGame = () => {
@@ -104,7 +106,7 @@ const StartPage = () =>  {
         <select id="key-select" value={selectedLevel} onChange={(e) => setSelectedLevel(e.target.value)}>
           <option value="">-- Select a game level--</option>
           {levels?.map(key => (
-            <option key={key} value={key}>{key}</option>
+            <option key={key?.value} value={key?.value}>{key?.name}</option>
           ))}
         </select>
           <button

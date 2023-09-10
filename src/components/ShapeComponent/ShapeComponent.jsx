@@ -18,6 +18,7 @@ import Draggable from 'react-draggable';
 import { Tooltip } from 'react-tooltip'
 
 function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, shapeUri, setMovedShape, addOrUpdate }){
+  console.log("the shape", shape, shapeUri);
   const [activeDrags, setActiveDrag] = useState(0);
   const [deltaPosition, setDeltaPosition] = useState({x:0, y:0});
   const [initialPos, setInitialPos] = useState({x: 0, y: 0});
@@ -39,7 +40,14 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
     'shapeB6': shapeB6
   }
 
-  const shapePath = SVGS[shapeUri];
+  const getBeforeHyphen = str => {
+    const regex = /^([^-]+)/;
+    const match = str.match(regex);
+    return match[1];
+  }
+
+  console.log("the shape URI", shapeUri);
+  const shapePath = SVGS[getBeforeHyphen(shapeUri)];
 
   const draggableRef = useRef();
   const divRef = useRef();
@@ -111,12 +119,12 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
         handleDrop(e);
         const rect = theRef.current.getBoundingClientRect();
         const shapeRect = divRef.current.getBoundingClientRect();
-
+        console.log("the rext", rect);
         const scale = rect.width / initialSize.width;
         const size = rect.width * 0.5;
         setInitialSize({
-          width: initialSize.width * (scale /5),
-          height: initialSize.height * (scale/5)
+          width: initialSize.width * (scale /3),
+          height: initialSize.height * (scale/3)
         })
 
         const mainBoxOffset = {
@@ -208,14 +216,48 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
         theShapeDragged?.classList.add("inBox");
       }
     }
+
+    const getDimensions = () => {
+
+      let height = initialSize?.height;
+      let width = initialSize?.width;
+
+      switch(getBeforeHyphen(shapeUri)){
+        case 'shapeA2':
+          height = initialSize?.height + 220;
+          width = initialSize?.width + 160;
+          break;
+        case 'shapeA1':
+          height = initialSize?.height + 150;
+          width = initialSize?.width + 150;
+          break;
+        case 'shapeA3':
+          height = initialSize?.height + 81;
+          width = initialSize?.width - 91;
+          break;
+        case 'shapeA4':
+          height = initialSize?.height + 90;
+          width = initialSize?.width - 10;
+          break;
+        default:
+          height = initialSize?.height;
+          width = initialSize?.width;
+      }
+
+      return {
+        height: height,
+        width: width
+      }
+    }
   
     return (
       <div id={shapeUri} ref={currDraggableRef}>
+        {console.log("the id", shapeUri)}
       <Draggable id={shapeUri} onDrag={handleDrag} {...dragHandlers} onStop={handleDraggableDrop} ref={draggableRef} defaultPosition={{x: shape?.x || 0, y: shape?.y || 0}}>
-        <div className={`handle ${shapeUri} svg-containerImg`} ref={divRef} style={{position: "absolute"}}>
+        <div className={`handle ${shapeUri} svg-containerImg`} ref={divRef} style={{position: "absolute", justifyItems: 'baseline'}}>
         <RotatableShape setImageAngle={setImgAngle}>
-        <img src={shapePath} id={`${shapeUri}`} className="shape-piece" width={initialSize?.width} height={initialSize?.height}/>
-        <p className="shape-text" style={{color: "black", fontWeight: "bold"}}>{shape?.shapeUri}</p>
+        <img src={shapePath} id={`${shapeUri}`} className="shape-piece" width={getDimensions()?.width} height={getDimensions()?.height}/>
+        <p className="shape-text" style={{color: "black", fontWeight: "bold", marginTop: '50px'}}>{shape?.shapeUri}</p>
         {/* <a className="shape-text"         
           key={shape?.shapeUri}
           data-tooltip-id="my-tooltip"
