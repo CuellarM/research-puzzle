@@ -61,7 +61,7 @@ const getBeforeHyphen = str => {
 
 function renderDroppedShapes() {
   return playerValues?.map((shape) => {
-    if(JSON.stringify(shape) === '{}'){
+    if(JSON.stringify(shape) === '{}' || shape?.shapeUri === 'gameBox-main'){
       return;
     }
 
