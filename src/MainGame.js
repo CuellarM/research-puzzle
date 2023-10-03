@@ -30,6 +30,10 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
   const [requestObject, setRequestObject] = useState({});
   const [objectJustReceived, setObjectJustReceived] = useState({})
 
+  // useEffect(() => {
+  //   setGameObjects(gameObjects);
+  // }, [gameObjects])
+
   //room + name => key
   const localStorageKey = playerName + roomId;
   localStorageKey?.toLowerCase();
@@ -73,8 +77,13 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
       //   console.error(`Shape element is not a direct child of 'gameBox'.`);
       //   return;
       // }
-    
-      parentElement.removeChild(shapeElement);
+
+
+      if(parentElement.contains(shapeElement)){
+        parentElement.removeChild(shapeElement);
+      } else {
+        console.log('Element does not exist to be removed');
+      }
 
       updateOrAddObject({
         shapeUri: shapeName,
@@ -82,12 +91,24 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
       })
 
       const playerObject = gameSprites.find((obj) => obj?.shapeUri === shapeName);
+
       if(playerObject){
+        const object = playerObject;
+        // updateObjectOwner(object, requestingPlayer)
         playerSocket.emit('sendToRequestingPlayer', requestingPlayer, playerObject);
         emitSpritePositionToOtherPlayers(playerObject, true);
       }
+
+      // setGameObjects(gameObjects);
       
     };
+
+    const updateObjectOwner = (playerObject, playerId) => {
+      console.log('updateing value');
+      playerObject['owner'] = playerId;
+      console.log('the updated object ', playerObject);
+      return playerObject;
+    }
 
   //Request to get sprite from another player
   const handleSpriteRequestToPlayer = (sendingPlayer, spriteName) => {
@@ -110,8 +131,6 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
 
   const handleRequestedSprites = (spriteObject) => {
     setRequestedObject(prevObjects => {
-
-      console.log("the prev object", spriteObject);
       if(objectJustReceived?.shapeUri === spriteObject?.shapeUri){
         return;
       } else{
@@ -426,8 +445,8 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
     
       {
         newGameSprite?.map((shape, index) => {
-
-          if(shape?.isVisible){
+          const isOwner = shape?.owner === playerId;
+          if(shape?.isVisible && isOwner){
             return (<ShapeComponent 
                 key={index} 
                 shape={shape} 
@@ -443,18 +462,23 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
         })
       }
       {
-        requestedObject?.map((shape, index) => (
-          <ShapeComponent 
-            key={index} 
-            shape={shape} 
-            handleShapeClick={handleShapeClick} 
-            handleDragStart={(e, data) => handleDragStart(e,data)}  
-            theRef={targetDropRef} 
-            shapeUri={shape?.shapeUri}
-            setMovedShape={setMovedShape}
-            addOrUpdate={updateOrAddObject}
-          />
-        ))
+        requestedObject?.map((shape, index) => {
+          const isOwner = shape?.owner === playerId;
+          if(isOwner){
+            return (
+              <ShapeComponent 
+                key={index} 
+                shape={shape} 
+                handleShapeClick={handleShapeClick} 
+                handleDragStart={(e, data) => handleDragStart(e,data)}  
+                theRef={targetDropRef} 
+                shapeUri={shape?.shapeUri}
+                setMovedShape={setMovedShape}
+                addOrUpdate={updateOrAddObject}
+              />
+            )
+          }
+        })
       }
         <Tooltip
           id="my-tooltip"

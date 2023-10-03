@@ -19,7 +19,6 @@ const StartPage = () =>  {
     ]
     useEffect(() => {
         playerSocket.on('newGameSprite', (newSpriteObject) => {
-          console.log('the new sprites', newSpriteObject)
           setAllGameSprites(newSpriteObject?.playerSprites[0]);
           setPlayersInRoom(newSpriteObject?.players);
         });

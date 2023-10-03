@@ -18,7 +18,6 @@ import Draggable from 'react-draggable';
 import { Tooltip } from 'react-tooltip'
 
 function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, shapeUri, setMovedShape, addOrUpdate }){
-  console.log("the shape", shape, shapeUri);
   const [activeDrags, setActiveDrag] = useState(0);
   const [deltaPosition, setDeltaPosition] = useState({x:0, y:0});
   const [initialPos, setInitialPos] = useState({x: 0, y: 0});
@@ -46,7 +45,6 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
     return match[1];
   }
 
-  console.log("the shape URI", shapeUri);
   const shapePath = SVGS[getBeforeHyphen(shapeUri)];
 
   const draggableRef = useRef();
@@ -92,15 +90,16 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
       return false;
     }
 
-    const setForLocalStorage = (id, angle, shapeUri, x, y) => {
+    const setForLocalStorage = (id, angle, shapeUri, x, y, owner, shapeId) => {
       const obj = {
-        id,
+        id: shapeId,
         x: x,  
         y: y,
         angle,
         shapeUri,
         isRemoved: false,
-        isVisible: true
+        isVisible: true,
+        owner: owner
       }
 
       addOrUpdate(obj);
@@ -150,9 +149,11 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
         const y = parseInt(parts?.[1]); // -389
       
         setMovedShape({
-          id: e?.target?.id || imgElement?.id,
+          id: shape?.id,
+          shapeId: e?.target?.id || imgElement?.id,
           x: x,
           y: y,
+          owner: shape?.owner,
           shapeUri: e?.target?.id || imgElement?.id,
           angle: imgAngle?.angle || 0,
           width: rect?.width,
@@ -161,7 +162,7 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
 
         const theId = e?.target?.id || imgElement?.id;
         const theAngle = imgAngle?.angle || 0;
-        setForLocalStorage(theId, theAngle,  e?.target?.id || imgElement?.id, x, y)
+        setForLocalStorage(theId, theAngle,  e?.target?.id || imgElement?.id, x, y, shape?.owner, shape?.id)
 
       } else{
         revertDrag();
@@ -212,7 +213,20 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
 
         img?.classList?.add('inbox');
 
-        currDraggableRef.current.parentNode.removeChild(currDraggableRef.current); 
+        // if (currDraggableRef.current.parentNode.contains(currDraggableRef.current)) {
+        //   // Remove the child node if it's a child of the parent
+        //   console.log('contaaaaaains in shape component', currDraggableRef.current);
+        //   currDraggableRef.current.parentNode.removeChild(currDraggableRef.current);
+        // } else {
+        //   console.error("Error: The node to be removed is not a child of this node.");
+        // }
+
+        if(currDraggableRef.current.parentNode.contains(currDraggableRef.current)){
+          currDraggableRef.current.parentNode.removeChild(currDraggableRef.current); 
+        } else {
+          console.log('Cannot remove objhect from node')
+        }
+        
         theShapeDragged?.classList.add("inBox");
       }
     }
