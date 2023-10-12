@@ -26,28 +26,6 @@
   border-image-slice: 4;
 }
 
-.bottomThumbnailContainer {
-  flex: 0 0 calc(50% - 20px); 
-  /* Adjust the width as needed to leave space between the boxes */
-  max-width: calc(50% - 20px); /* Maximum width of each box (half of container width minus padding) */
-  background-color: #f0f0f0; /* Background color for the boxes */
-  border: 2px solid #ccc; /* Border for the boxes */
-  height: 100%;
-  box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.onBoardShape {
-  width: 100px; /* Adjust the width as needed for each shape */
-  height: 100px; /* Adjust the height as needed for each shape */
-  display: flex;
-  justify-content: space-between;
-  flex-direction: row-reverse;
-  align-items: center;
-}
-
 .box {
   width: 200px;
   height: 200px;
@@ -62,13 +40,6 @@
   );
   
   border-image-slice: 4;
-  /* border-image: repeating-linear-gradient(
-    45deg, 
-    black,
-    black 10px, 
-    #fff 10px,
-    #fff 20px
-  ); */
 }
 
 .list-container {
