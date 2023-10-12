@@ -25,10 +25,12 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
   const [movedShape, setMovedShape] = useState({});
   const [newGameSprite, setGameObjects] = useState(gameObjects);
   const [localStorageItems, setLocalStorageItems] = useState([]);
+  const [playedValues, setPlayedValues] = useState([]);
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [requestObject, setRequestObject] = useState({});
   const [objectJustReceived, setObjectJustReceived] = useState({})
+  const playedRef = useRef([]);
 
   // useEffect(() => {
   //   setGameObjects(gameObjects);
@@ -42,8 +44,18 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
   const targetDropRef = useRef(null);
 
   useEffect(() => {
+    console.log('the shape is moved events', movedShape)
     emitSpritePositionToOtherPlayers(movedShape, false);
+    if(!isEmpty(movedShape)){
+      updateOrAddObjectOther(movedShape);
+    }
   }, [movedShape])
+
+
+  function isEmpty(obj) { 
+    for (var x in obj) { return false; }
+    return true;
+  }
 
   const updateOrAddObject = (newObject) => {
     const index = localStorageItems?.findIndex(item => item?.id === newObject?.id);
@@ -51,6 +63,7 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
     if (index !== -1) {
       // If the object already exists, replace it
       localStorageItems[index] = newObject;
+      console.log('local storage', localStorageItems)
       setLocalStorageItems(localStorageItems);
     } else {
       // If the object doesn't exist, add it
@@ -61,6 +74,65 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
 
     localStorage.setItem(localStorageKey, JSON.stringify(localStorageItems));
   }
+
+    const updateOrAddObjectOther = (newObject) => {
+    const localStorageItems = playedRef.current;
+    if(localStorageItems.length < 1){
+      playedRef.current.push(newObject);
+      playerSocket.emit('UPDATE_SPRITES_ACROSS_ROOM', roomId, playerName, playedRef.current);
+      return;
+    }
+    const existingIndex = playedRef.current.findIndex(obj => obj.id === newObject.id);
+
+    if(existingIndex !== -1) {
+      // Object exists - update it
+      const updatedValues = [...playedRef.current];
+      updatedValues[existingIndex] = newObject;
+      playedRef.current = updatedValues;
+  
+    } else {  
+      // Object doesn't exist - add it
+      playedRef.current.push(newObject);
+    }
+    playerSocket.emit('UPDATE_SPRITES_ACROSS_ROOM', roomId, playerName, playedRef.current);
+
+    // localStorage.setItem(localStorageKey, JSON.stringify(localStorageItems));
+  }
+
+  const removeObjectAndUpdateRoom = (newObject) => {
+    const localStorageItems = playedRef.current;
+    const existingIndex = playedRef.current.findIndex(obj => obj.id === newObject.id);
+
+    if(existingIndex !== -1) {
+  // Object exists - remove it
+      const updatedValues = [...playedRef.current];
+      updatedValues.splice(existingIndex, 1);
+      console.log('the updated values spliced', updatedValues)
+      playedRef.current = updatedValues;
+      playerSocket.emit('UPDATE_SPRITES_ACROSS_ROOM', roomId, playerName, playedRef.current);
+    } 
+
+    // localStorage.setItem(localStorageKey, JSON.stringify(localStorageItems));
+  }
+
+  const addObjectOrReplace = (newObject) => {
+    setGameObjects((prevArray) => {
+      const newArray = [...prevArray];
+      const index = newArray.findIndex((obj) => obj.id === newObject.id);
+
+      if (index !== -1) {
+        // If the object exists, replace it
+        newArray[index] = newObject;
+      } else {
+        // If the object doesn't exist, push it into the array
+        newArray.push(newObject);
+      }
+
+      return newArray;
+    });
+  }
+
+
 
 
 
@@ -94,7 +166,8 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
 
       if(playerObject){
         const object = playerObject;
-        // updateObjectOwner(object, requestingPlayer)
+        console.log('the object', playerObject)
+        // updateOrAddObjectOther(updateObjectOwner(playerObject, requestingPlayer));
         playerSocket.emit('sendToRequestingPlayer', requestingPlayer, playerObject);
         emitSpritePositionToOtherPlayers(playerObject, true);
       }
@@ -103,10 +176,35 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
       
     };
 
+
+    const handleRemoveShapeV2 = (shapeName, requestingPlayer, gameSprites) => {
+
+      updateOrAddObject({
+        shapeUri: shapeName,
+        isVisible: false
+      })
+
+      const playerObject = gameSprites.find((obj) => obj?.shapeUri === shapeName);
+
+      if(playerObject){
+        playerObject['isVisible'] = false;
+        addObjectOrReplace(updateObjectOwner(playerObject, requestingPlayer));
+        // updateOrAddObjectOther(updateObjectownerOwner(playerObject, requestingPlayer));
+        playerSocket.emit('sendToRequestingPlayer', requestingPlayer, playerObject);
+        // emitSpritePositionToOtherPlayers(playerObject, true);
+        removeObjectAndUpdateRoom(playerObject);
+      }
+
+      // setGameObjects(gameObjects);
+      
+    };
+
     const updateObjectOwner = (playerObject, playerId) => {
-      console.log('updateing value');
       playerObject['owner'] = playerId;
-      console.log('the updated object ', playerObject);
+      playerObject['x'] = 0;
+      playerObject['y'] = 0;
+      playerObject['isOnBoard'] = true;
+      playerObject['isVisible'] = true;
       return playerObject;
     }
 
@@ -130,35 +228,37 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
 
 
   const handleRequestedSprites = (spriteObject) => {
-    setRequestedObject(prevObjects => {
-      if(objectJustReceived?.shapeUri === spriteObject?.shapeUri){
-        return;
-      } else{
-        setObjectJustReceived({shapeUri: prevObjects?.shapeUri})
-      }
+    addObjectOrReplace(spriteObject);
+    // setRequestedObject(prevObjects => {
+    //   if(objectJustReceived?.shapeUri === spriteObject?.shapeUri){
+    //     return;
+    //   } else{
+    //     setObjectJustReceived({shapeUri: prevObjects?.shapeUri})
+    //   }
 
-      // Check if the object already exists in the array
-      let objectExists = null;
+    //   // Check if the object already exists in the array
+    //   let objectExists = null;
 
-      if( typeof prevObjects === 'undefined'){
-        objectExists = prevObjects?.some(obj => obj === spriteObject);
-      }
+    //   if( typeof prevObjects === 'undefined'){
+    //     objectExists = prevObjects?.some(obj => obj === spriteObject);
+    //   }
     
-      // If the object already exists, return the previous array
-      if (objectExists) {
-        return prevObjects;
-      }
+    //   // If the object already exists, return the previous array
+    //   if (objectExists) {
+    //     return prevObjects;
+    //   }
     
-      // If the object doesn't exist, add it to the array
-      setGameObjects([...newGameSprite, spriteObject])
-      // return [...prevObjects, spriteObject];
-    });
+    //   // If the object doesn't exist, add it to the array
+    //   setGameObjects([...newGameSprite, spriteObject])
+    //   // return [...prevObjects, spriteObject];
+    // });
   }
 
 
     // Sprites that you have requested for and received
     useEffect(() => {
       playerSocket.on('exchangedSprites', (spriteObject) => {
+        console.log('the exchanged sprite', spriteObject)
         handleRequestedSprites(spriteObject);
       });
     }, [playerSocket])
@@ -428,6 +528,24 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
   shapelist.push(shapeSvg2);
   shapelist.push(shapeSvg3);
 
+  const removeTestFunction = (playerObject, requestingPlayer) => {
+    addObjectOrReplace(updateObjectOwner(playerObject, requestingPlayer))
+  }
+
+  const updateState = (object) => {
+    addObjectOrReplace(object);
+  }
+
+  const objTest = {
+    id: 'p2-01-A3',
+    isVisible: true,
+    shapeUri: 'shapeA3-032',
+    owner: 'bhjjh',
+    isOnBoard: true,
+    x: 0,
+    y: 0
+  }
+
   return (
     <div className="body container">
       <div className="left">
@@ -438,15 +556,16 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
 
       <div className="right">
       <div>
+        <button onClick={() => removeTestFunction(objTest, 'testReqPlayer') }>Remove</button>
+      <div>{playerName}</div>
         <div id="gameBox" ref={targetDropRef}>
-        <GameWorld id={"gameBox-main"}/>
-        </div>
-        <div id="shape" className="shape">
-    
-      {
+        <GameWorld id={"gameBox-main"}> 
+        {
         newGameSprite?.map((shape, index) => {
+          console.log('the shape events map', shape)
           const isOwner = shape?.owner === playerId;
-          if(shape?.isVisible && isOwner){
+          console.log('is owner', isOwner)
+          if(shape?.isVisible && isOwner && !shape?.isOnBoard){
             return (<ShapeComponent 
                 key={index} 
                 shape={shape} 
@@ -456,12 +575,38 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
                 shapeUri={shape?.shapeUri}
                 setMovedShape={setMovedShape}
                 addOrUpdate={updateOrAddObject}
+                updateState={updateState}
             />
             );
             }
         })
       }
+        </GameWorld>
+        </div>
+        <div id="shape" className="shape">
+    {console.log('the sprites new', newGameSprite)}
       {
+        newGameSprite?.map((shape, index) => {
+          console.log('the shape events map', shape)
+          const isOwner = shape?.owner === playerId;
+          console.log('is owner', isOwner)
+          if(shape?.isOnBoard && isOwner && shape?.isVisible){
+            return (<ShapeComponent 
+                key={index} 
+                shape={shape} 
+                handleShapeClick={handleShapeClick} 
+                handleDragStart={(e, data) => handleDragStart(e,data)}  
+                theRef={targetDropRef} 
+                shapeUri={shape?.shapeUri}
+                setMovedShape={setMovedShape}
+                addOrUpdate={updateOrAddObject}
+                updateState={updateState}
+            />
+            );
+            }
+        })
+      }
+      {/* {
         requestedObject?.map((shape, index) => {
           const isOwner = shape?.owner === playerId;
           if(isOwner){
@@ -479,12 +624,12 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
             )
           }
         })
-      }
+      } */}
         <Tooltip
           id="my-tooltip"
         />
       </div>
-      <AlertModal  isOpen={isModalOpen} setModalOpen={setModalOpen} requestObject={requestObject} handleRemoveShape={handleRemoveShape}/>
+      <AlertModal  isOpen={isModalOpen} setModalOpen={setModalOpen} requestObject={requestObject} handleRemoveShape={handleRemoveShapeV2}/>
       </div>
       </div>
     </div>

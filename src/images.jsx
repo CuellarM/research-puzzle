@@ -144,7 +144,10 @@ export const shapeSvg = {
         "name": "setThree-A1",
         "shape": "triangle",
         "svg": img,
-        "shapeUri": "shapeB2"
+        "shapeUri": "shapeB2",
+        "isOnBoard": true,
+        'x': 0,
+        'y': 0
 };
 
 export const shapeSvg1 = {
@@ -153,7 +156,10 @@ export const shapeSvg1 = {
         "name": "setThree-A2",
         "shape": "triangle",
         "svg": null,
-        "shapeUri": "shapeB3"
+        "shapeUri": "shapeB3",
+        "isOnBoard": true,
+        'x': 0,
+        'y': 0
 };
 
 export const shapeSvg2 = {
@@ -162,7 +168,10 @@ export const shapeSvg2 = {
    "name": "setThree-A2",
    "shape": "triangle",
    "svg": null,
-   "shapeUri": "shapeB4"
+   "shapeUri": "shapeB4",
+   "isOnBoard": true,
+   'x': 0,
+   'y': 0
 };
 
 export const shapeSvg3 = {
@@ -171,7 +180,10 @@ export const shapeSvg3 = {
    "name": "setThree-A2",
    "shape": "triangle",
    "svg": null,
-   "shapeUri": "shapeB5"
+   "shapeUri": "shapeB5",
+   "isOnBoard": true,
+   'x': 0,
+   'y': 0
 };
 
 // export const TryMe = () => {

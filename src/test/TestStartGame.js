@@ -1,10 +1,9 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { ProgressBar } from  'react-loader-spinner'
-import { playerSocket } from "./service/ConnectSocket";
-import MainGame from "./MainGame";
+import { playerSocket } from "../service/ConnectSocket";
+import TestGame from "./TestGame";
 
-const StartPage = () =>  {
+const TestStartGame = () =>  {
     const [showOverlay, setShowOverlay] = useState(true);
     const [playerName, setPlayerName] = useState("");
     const [roomId, setRoomId] = useState(null);
@@ -13,47 +12,6 @@ const StartPage = () =>  {
     const [showMainGame, setShowMainGame] = useState(false);
     const [showLoading, setShowLoading] = useState(false);
     const [selectedLevel, setSelectedLevel] = useState("");
-
-    const testObjects = [
-      {
-        id: 'p2-01-A1',
-        isVisible: true,
-        shapeUri: 'shapeA1-029',
-        owner: 'bhjjh',
-        isOnBoard: true,
-        x: 0,
-        y: 0
-      },
-      {
-        id: 'p2-02-A1',
-        isVisible: true,
-        shapeUri: 'shapeA1-030',
-        owner: 'bhjjh',
-        isOnBoard: true,
-        x: 0,
-        y: 0
-      },
-      {
-        id: 'p2-01-A4',
-        isVisible: true,
-        shapeUri: 'shapeA4-031',
-        owner: 'bhjjh',
-        isOnBoard: true,
-        x: 0,
-        y: 0
-      },
-      {
-        id: 'p2-01-A3',
-        isVisible: true,
-        shapeUri: 'shapeA3-032',
-        owner: 'bhjjh',
-        isOnBoard: true,
-        x: 0,
-        y: 0
-      }
-    ]
-
-    const playerNameTest = "bhjjh"
 
     const levels = [
       {"name":"Level 1",  "value":"LEVEL_1"}, 
@@ -174,11 +132,10 @@ const StartPage = () =>  {
               </div>
           }
           {
-            showMainGame && <MainGame gameObjects={newGameSprite} playersInRoom={playersInRoom} playerName={playerName} roomId={roomId}/>
+            showMainGame && <TestGame gameObjects={newGameSprite} playersInRoom={playersInRoom} playerName={playerName} roomId={roomId}/>
           }
-          {/* <MainGame gameObjects={testObjects} playersInRoom={playersInRoom} playerName={playerNameTest} roomId={'roomea'}/> */}
           </div>
     )
 }
 
-export default StartPage;
+export default TestStartGame;

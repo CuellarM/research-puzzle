@@ -1,0 +1,96 @@
+/* body {
+    margin: 0;  Reset margin on the body element 
+  } */
+/* .container {
+    width: 80vw; /* 100% of viewport width */
+    /* height: 60vh; /* 100% of viewport height */
+    /* display: flex;
+    align-self: flex-start; */
+    /* justify-content: space-around; /* To create space around the boxes */
+    /* align-items: center; /* To center vertically */
+    /* margin-top: 0%; */ */ */
+    /* padding: 20px; /* Space around the container */
+    /* box-sizing: border-box; */ */
+    /* flex-direction: row; /* Change the flex direction to column */
+    /* overflow: hidden; /* Hide any content that goes beyond the container */
+  /* } */ */ */ */ */
+  
+  .playground {
+    flex: 0 0 calc(50% - 20px); /* Adjust the width as needed to leave space between the boxes */
+    max-width: calc(50% - 10px); /* Maximum width of each box (half of container width minus padding) */
+    height: 100%;
+    background-color: #f0f0f0; /* Background color for the boxes */
+    border: 2px solid #ccc; /* Border for the boxes */
+    box-sizing: border-box;
+  }
+
+  .bottomContainer {
+    width: 80vw; /* 100% of viewport width */
+    height: 20vh; /* 100% of viewport height */
+    flex-direction: row;
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .bottomSelectContainer {
+    flex: 0 0 calc(50% - 20px); /* Adjust the width as needed to leave space between the boxes */
+    max-width: calc(50% - 20px); /* Maximum width of each box (half of container width minus padding) */
+    background-color: #f0f0f0; /* Background color for the boxes */
+    border: 2px solid #ccc; /* Border for the boxes */
+    height: 100%;
+    box-sizing: border-box;
+  }
+
+  .bottomThumbnailContainer {
+    flex: 0 0 calc(50% - 20px); 
+    /* Adjust the width as needed to leave space between the boxes */
+    max-width: calc(50% - 20px); /* Maximum width of each box (half of container width minus padding) */
+    background-color: #f0f0f0; /* Background color for the boxes */
+    border: 2px solid #ccc; /* Border for the boxes */
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .onBoardShape {
+    width: 100px; /* Adjust the width as needed for each shape */
+    height: 100px; /* Adjust the height as needed for each shape */
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row-reverse;
+    align-items: center;
+  }
+  
+  /* Add additional styling for the boxes as needed */
+
+  .tabsContainer {
+    display: flex;
+    flex-direction: row;
+    order: 10;
+    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* shapes */
+  .circle {
+    background-color: #3498db;
+    border-radius: 50%;
+  }
+  
+  .square {
+    background-color: #e74c3c;
+  }
+  
+  .triangle {
+    width: 0;
+    height: 0;
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+    border-bottom: 100px solid #2ecc71;
+  }
+
+  /* end of shapes */
+  

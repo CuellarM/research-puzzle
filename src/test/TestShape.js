@@ -1,29 +1,29 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import React, { useEffect, useRef, useState } from 'react';
-import "./ShapeComponent.css";
-import shapeA1 from "../../puzzle-svgs/shape-A1.svg";
-import shapeA2 from "../../puzzle-svgs/shape-A2.svg";
-import shapeA3 from "../../puzzle-svgs/shape-A3.svg";
-import shapeA4 from "../../puzzle-svgs/shape-A4.svg";
-import shapeB1 from "../../puzzle-svgs/shape-B1.svg";
-import shapeB2 from "../../puzzle-svgs/shape-B2.svg";
-import shapeB3 from "../../puzzle-svgs/shape-B3.svg";
-import shapeB4 from "../../puzzle-svgs/shape-B4.svg";
-import shapeB5 from "../../puzzle-svgs/shape-B5.svg";
-import shapeB6 from "../../puzzle-svgs/shape-B6.svg";
-import RotatableShape from '../RotatableShape/RotatableShape';
+import "../components/ShapeComponent/ShapeComponent.css";
+import shapeA1 from "../puzzle-svgs/shape-A1.svg";
+import shapeA2 from "../puzzle-svgs/shape-A2.svg";
+import shapeA3 from "../puzzle-svgs/shape-A3.svg";
+import shapeA4 from "../puzzle-svgs/shape-A4.svg";
+import shapeB1 from "../puzzle-svgs/shape-B1.svg";
+import shapeB2 from "../puzzle-svgs/shape-B2.svg";
+import shapeB3 from "../puzzle-svgs/shape-B3.svg";
+import shapeB4 from "../puzzle-svgs/shape-B4.svg";
+import shapeB5 from "../puzzle-svgs/shape-B5.svg";
+import shapeB6 from "../puzzle-svgs/shape-B6.svg";
+import RotatableShape from '../components/RotatableShape/RotatableShape';
 import Draggable from 'react-draggable';
 
 import { Tooltip } from 'react-tooltip'
 
-function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, shapeUri, setMovedShape, addOrUpdate, updateState }){
+function TestShape ({ index, shape, shapeRef, addToPlayground, handleShapeClick, handleDragsStart,theRef, shapeUri, setMovedShape, addOrUpdate, setBoardObjects, bottomContainerRef }){
   const [activeDrags, setActiveDrag] = useState(0);
   const [deltaPosition, setDeltaPosition] = useState({x:0, y:0});
   const [initialPos, setInitialPos] = useState({x: 0, y: 0});
   const [initialSize, setInitialSize] = useState({
-    width: 200,
-    height: 200
+    width: 100,
+    height: 100
   });
 
   const SVGS = {
@@ -52,12 +52,11 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
   const currDraggableRef = useRef();
 
 
-  const onStart = () => {
+  const onStart = (event) => {
     setInitialPos({
       x: draggableRef.current.state.x,  
       y: draggableRef.current.state.y
     });
-    console.log('the initials drag', initialPos);
     setActiveDrag(activeDrags + 1);
   }
 
@@ -116,10 +115,9 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
       const y = clientY;
 
       if(isOverDropZone(x,y)){
-        handleDrop(e);
+        handleDrop(e, shape);
         const rect = theRef.current.getBoundingClientRect();
         const shapeRect = divRef.current.getBoundingClientRect();
-        console.log("the rext", rect);
         const scale = rect.width / initialSize.width;
         const size = rect.width * 0.5;
         setInitialSize({
@@ -149,10 +147,21 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
         const x = parseInt(parts?.[0]); // -62 
         const y = parseInt(parts?.[1]); // -389
 
+        // update isOnBoard of the shape
         shape['isOnBoard'] = false;
+        shape['isVisible'] = true;
         shape['x'] = x;
         shape['y'] = y;
-        updateState(shape);
+
+        setBoardObjects(prev => prev.map(obj => {
+            if(obj.shape === shape) {
+              return {...obj, isOnBoard: !obj.isOnBoard};  
+            }
+            return obj;
+          }))
+
+        // update the shape and push into array
+        // updateObjectsArray(shape?.id, shape);
       
         setMovedShape({
           id: shape?.id,
@@ -160,11 +169,16 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
           x: x,
           y: y,
           owner: shape?.owner,
-          shapeMeta: e?.target?.id || imgElement?.id,
-          shapeUri: shapeUri,
+          shapeUri: e?.target?.id || imgElement?.id,
           angle: imgAngle?.angle || 0,
           width: rect?.width,
-          height: rect?.height
+          height: rect?.height,
+          offsetLeft: theShapeDiv?.offsetLeft,
+          offsetTop: theShapeDiv?.offsetTop,
+          clientX: clientX,
+          clientY: clientY,
+          deltaX: x - initialPos?.x,
+          deltaY: y - initialPos?.y
         })
 
         const theId = e?.target?.id || imgElement?.id;
@@ -191,12 +205,24 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
     }
 
 
-    const handleDrop = (e) => {
+    const handleDrop = (e, theShapeObject) => {
       e.preventDefault();
 
       const shapeId = e.target.id;
       const shape = document.getElementById(shapeId);
       const box = document.getElementById("gameBox-main");
+
+      const shapeNode = shapeRef?.current;
+      if(bottomContainerRef.current.contains(shapeNode)){
+        // addToPlayground(theShapeObject, index);
+        // shapeNode.classList.remove('onBoardShape');
+        // theRef.current.appendChild(shapeNode)
+        // bottomContainerRef.current.removeChild(shapeNode);
+      } else {
+        console.log('could not remove shape from parent');
+      }
+      // 
+      // theRef.current.appendChild(shape)
 
       const actualShape = document.getElementsByClassName(shapeId);
 
@@ -204,37 +230,29 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
 
       const theShapeDragged = currDraggableRef.current;
       if (!theShapeDragged?.classList?.contains("inBox")) {
-        // const theDraggedShape = currDraggableRef.current.firstChild;
-        // const shapeDiv = document.createElement('div');
+        const theDraggedShape = currDraggableRef.current.firstChild;
+        const shapeDiv = document.createElement('div');
 
-        // shapeDiv.appendChild(theDraggedShape)
-        // box.appendChild(shapeDiv);
-        // shapeDiv.id = shapeId;
-        // shapeDiv.ref = currDraggableRef;
-        // // shapeDiv.style.position = "absolute";
-        // const img = shapeDiv.querySelector('img');
+        shapeDiv.appendChild(theDraggedShape)
+        box.appendChild(shapeDiv);
+        shapeDiv.id = shapeId;
+        shapeDiv.ref = currDraggableRef;
+        // shapeDiv.style.position = "absolute";
+        const img = shapeDiv.querySelector('img');
 
-        // const shapeEl = shapeDiv?.firstChild;
+        const shapeEl = shapeDiv?.firstChild;
 
-        // shapeEl.style.position = "absolute";
+        shapeEl.style.position = "absolute";
 
-        // img?.classList?.add('inbox');
+        img?.classList?.add('inbox');
 
-        // if (currDraggableRef.current.parentNode.contains(currDraggableRef.current)) {
-        //   // Remove the child node if it's a child of the parent
-        //   console.log('contaaaaaains in shape component', currDraggableRef.current);
-        //   currDraggableRef.current.parentNode.removeChild(currDraggableRef.current);
-        // } else {
-        //   console.error("Error: The node to be removed is not a child of this node.");
-        // }
-
-        // if(currDraggableRef.current.parentNode.contains(currDraggableRef.current)){
-        //   currDraggableRef.current.parentNode.removeChild(currDraggableRef.current); 
-        // } else {
-        //   console.log('Cannot remove objhect from node')
-        // }
+        if(currDraggableRef.current.parentNode.contains(currDraggableRef.current)){
+          currDraggableRef.current.parentNode.removeChild(currDraggableRef.current); 
+        } else {
+          console.log('Cannot remove objhect from node')
+        }
         
-        // theShapeDragged?.classList.add("inBox");
+        theShapeDragged?.classList.add("inBox");
       }
     }
 
@@ -245,19 +263,19 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
 
       switch(getBeforeHyphen(shapeUri)){
         case 'shapeA2':
-          height = initialSize?.height + 220;
-          width = initialSize?.width + 160;
+          height = initialSize?.height + 165;
+          width = initialSize?.width + 80;
           break;
         case 'shapeA1':
-          height = initialSize?.height + 150;
-          width = initialSize?.width + 150;
+          height = initialSize?.height + 50;
+          width = initialSize?.width + 50;
           break;
         case 'shapeA3':
           height = initialSize?.height + 81;
           width = initialSize?.width - 91;
           break;
         case 'shapeA4':
-          height = initialSize?.height + 90;
+          height = initialSize?.height + 5;
           width = initialSize?.width - 10;
           break;
         default:
@@ -273,22 +291,21 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
   
     return (
       <div id={shapeUri} ref={currDraggableRef}>
-        {console.log("the id", shapeUri)}
       <Draggable id={shapeUri} onDrag={handleDrag} {...dragHandlers} onStop={handleDraggableDrop} ref={draggableRef} defaultPosition={{x: shape?.x || 0, y: shape?.y || 0}}>
-        <div className={`handle ${shapeUri} svg-containerImg`} ref={divRef} style={{position: "absolute", justifyItems: 'baseline'}}>
-        <RotatableShape setImageAngle={setImgAngle}>
-        <img src={shapePath} id={`${shapeUri}`} className="shape-piece" width={getDimensions()?.width} height={getDimensions()?.height}/>
-        <p className="shape-text" style={{color: "black", fontWeight: "bold", marginTop: '50px'}}>{shape?.shapeUri}</p>
-        {/* <a className="shape-text"         
-          key={shape?.shapeUri}
-          data-tooltip-id="my-tooltip"
-          data-tooltip-content={shape?.shapeUri}>🤔</a> */}
-       {/* <span className="shape-text" style={{marginBottom: "100px"}}>{shapeUri}</span> */}
-       </RotatableShape>
+        <div className={`handle ${shapeUri} svg-containerImg`} ref={divRef}>
+            {!shape?.isOnBoard && (
+                   <RotatableShape setImageAngle={setImgAngle}>
+                    <img src={shapePath} id={`${shapeUri}`} className="shape-piece" width={shape?.isOnBoard ? '120px' : getDimensions()?.width} height={shape?.isOnBoard ? '120px' : getDimensions()?.height}/>
+                    <p className="shape-text" style={{color: "black", fontWeight: "bold", marginTop: '50px'}}>{shape?.shapeUri}</p>
+                </RotatableShape>
+            )}
+            {shape?.isOnBoard && (
+                <img src={shapePath} id={`${shapeUri}`} className="shape-piece" width={shape?.isOnBoard ? '120px' : getDimensions()?.width} height={shape?.isOnBoard ? '120px' : getDimensions()?.height}/>
+            )}
        </div>
-       </Draggable>
+       </Draggable> 
      </div>
     );
   }
 
-export default ShapeComponent;
+export default TestShape;
