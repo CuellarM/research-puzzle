@@ -1,11 +1,12 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 
 const Board = () => {
-    const [pieces, setPieces] = useState([
-        { id: 1, shape: 'square', color: 'red' },
-        { id: 2, shape: 'circle', color: 'green' },
-        { id: 3, shape: 'triangle', color: 'blue' },
-      ]);
+  const [pieces, setPieces] = useState([
+    { id: 1, shape: 'square', color: 'red' },
+    { id: 2, shape: 'circle', color: 'green' },
+    { id: 3, shape: 'triangle', color: 'blue' },
+  ]);
 
   const [droppedPieces, setDroppedPieces] = useState([]);
   const [draggingPiece, setDraggingPiece] = useState(null);
@@ -33,19 +34,19 @@ const Board = () => {
     event.preventDefault();
   };
 
-//   const onDragEnd = (event, id) => {
-//     const piece = droppedPieces.find((piece) => piece.id === Number(id));
-//     const x = event.clientX - event.target.getBoundingClientRect().left;
-//     const y = event.clientY - event.target.getBoundingClientRect().top;
-//     if (x < 0 || x > event.target.clientWidth || y < 0 || y > event.target.clientHeight) {
-//       setDroppedPieces((droppedPieces) =>
-//         droppedPieces.filter((piece) => piece.id !== Number(id))
-//       );
-//       setPieces((pieces) => [...pieces, piece]);
-//     }
-//   };
+  //   const onDragEnd = (event, id) => {
+  //     const piece = droppedPieces.find((piece) => piece.id === Number(id));
+  //     const x = event.clientX - event.target.getBoundingClientRect().left;
+  //     const y = event.clientY - event.target.getBoundingClientRect().top;
+  //     if (x < 0 || x > event.target.clientWidth || y < 0 || y > event.target.clientHeight) {
+  //       setDroppedPieces((droppedPieces) =>
+  //         droppedPieces.filter((piece) => piece.id !== Number(id))
+  //       );
+  //       setPieces((pieces) => [...pieces, piece]);
+  //     }
+  //   };
 
-const onDrag = (event, id) => {
+  const onDrag = (event, id) => {
     const piece = droppedPieces.find((piece) => piece.id === id);
     piece.x = event.clientX - event.target.getBoundingClientRect().left;
     piece.y = event.clientY - event.target.getBoundingClientRect().top;
@@ -82,22 +83,22 @@ const onDrag = (event, id) => {
       >
         {droppedPieces.map((piece) => (
           <div
-          key={piece.id}
-          style={{
-            position: 'absolute',
-            left: piece.x,
-            top: piece.y,
-            width: '50px',
-            height: '50px',
-            backgroundColor: piece.color,
-            borderRadius: piece.shape === 'circle' ? '50%' : 0,
-            transform: piece.shape === 'triangle' ? 'rotate(45deg)' : undefined,
-            cursor: 'move',
-          }}
-          draggable={true}
-          onDragStart={(event) => onDragStart(event, piece.id)}
-          onDragEnd={(event) => onDragEnd(event, piece.id)}
-        />
+            key={piece.id}
+            style={{
+              position: 'absolute',
+              left: piece.x,
+              top: piece.y,
+              width: '50px',
+              height: '50px',
+              backgroundColor: piece.color,
+              borderRadius: piece.shape === 'circle' ? '50%' : 0,
+              transform: piece.shape === 'triangle' ? 'rotate(45deg)' : undefined,
+              cursor: 'move',
+            }}
+            draggable={true}
+            onDragStart={(event) => onDragStart(event, piece.id)}
+            onDragEnd={(event) => onDragEnd(event, piece.id)}
+          />
         ))}
       </div>
       <div>
@@ -105,16 +106,16 @@ const onDrag = (event, id) => {
           <div
             key={piece.id}
             style={{
-                width: '50px',
-                height: '50px',
-                backgroundColor: piece.color,
-                borderRadius: piece.shape === 'circle' ? '50%' : 0,
-                transform: piece.shape === 'triangle' ? 'rotate(45deg)' : undefined,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                cursor: 'move',
-              }}
+              width: '50px',
+              height: '50px',
+              backgroundColor: piece.color,
+              borderRadius: piece.shape === 'circle' ? '50%' : 0,
+              transform: piece.shape === 'triangle' ? 'rotate(45deg)' : undefined,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              cursor: 'move',
+            }}
             draggable={true}
             onDragStart={(event) => onDragStart(event, piece.id)}
             // onDragEnd={(event) => onDragEnd(event, piece.id)}

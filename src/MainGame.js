@@ -603,6 +603,7 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
         <a className="player-details" style={{justifySelf: 'flex-end'}}> ℹ️</a>
         <Tooltip anchorSelect=".player-details" place="top">
         Playing name: {playerName}
+        Room id: {roomId}
         </Tooltip>
       </div>
     </div>
