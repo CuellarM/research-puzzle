@@ -1,14 +1,15 @@
-import * as React from 'react';
+/* eslint-disable react/prop-types */
+/* eslint-disable no-unused-vars */
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import FormHelperText from '@mui/material/FormHelperText';
-import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import * as React from 'react';
 
 export default function SelectLabels({players, shapeNames}) {
   const [playerId, setPlayerId] = React.useState('');
-  const [gamePlayers, setGamePlayers] = React.useState(players)
-  console.log("The players isn the room", players);
+  const [gamePlayers, setGamePlayers] = React.useState(players);
 
   const handleChange = (event) => {
     setPlayerId(event.target.value);
@@ -16,7 +17,7 @@ export default function SelectLabels({players, shapeNames}) {
 
   React.useEffect(() => {
     setGamePlayers(players);
-  }, [players])
+  }, [players]);
 
   return (
     <div>
@@ -29,14 +30,14 @@ export default function SelectLabels({players, shapeNames}) {
           label="Age"
           onChange={handleChange}
         >
-         <MenuItem value="">
+          <MenuItem value="">
             <em>None</em>
-        </MenuItem>
-            {gamePlayers?.map((index,key) => {
-              return(
-                <MenuItem key={key} value={index}>{index}</MenuItem>
-              )   
-            })}
+          </MenuItem>
+          {gamePlayers?.map((index,key) => {
+            return(
+              <MenuItem key={key} value={index}>{index}</MenuItem>
+            );   
+          })}
         </Select>
         <FormHelperText>Select player to Request piece</FormHelperText>
       </FormControl>

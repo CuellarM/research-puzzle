@@ -1,12 +1,9 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import GameView from "../../GameView";
-import { playerSocket } from "../../service/ConnectSocket";
-import "./TestTab.css"
-import GameWorld from '../../components/GameWorld/GameWorld';
-import SelectPlayer from '../../components/customSelect/SelectPlayer';
+import React, { useEffect, useRef, useState } from 'react';
+import { playerSocket } from '../../service/ConnectSocket';
+import './TestTab.css';
 
 const TestTabs = ({ playerName, setOtherPlayerValues, movedPlayer, showSelect = true }) => {
 
@@ -25,7 +22,7 @@ const TestTabs = ({ playerName, setOtherPlayerValues, movedPlayer, showSelect = 
   useEffect(() => {
     const filteredNames = getTabNames(playerValues);
     setFilteredPlayers(filteredNames);
-  }, [playerValues])
+  }, [playerValues]);
 
 
   /* Functions */
@@ -36,13 +33,13 @@ const TestTabs = ({ playerName, setOtherPlayerValues, movedPlayer, showSelect = 
     }).filter((name) => name !== playerName);
 
     return otherPlayers;
-  }
+  };
 
   const getDataOfOtherPlayer = (otherPlayerName) => {
     const foundObject = playerValues.find((obj) => obj[otherPlayerName]);
     const objectArray = foundObject[otherPlayerName];
     setOtherPlayerValues(objectArray);
-  }
+  };
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -62,7 +59,7 @@ const TestTabs = ({ playerName, setOtherPlayerValues, movedPlayer, showSelect = 
     const content = playerValues?.find((item) => Object.keys(item)[0] === val);
     setTabContent(content[val]);
     setIsContentAvailable(true);
-  }
+  };
 
   /* End of functions */
   useEffect(() => {
@@ -81,12 +78,12 @@ const TestTabs = ({ playerName, setOtherPlayerValues, movedPlayer, showSelect = 
           filteredPlayers?.map((playerName, index) => {
             return (
               <button key={index} className="tablinks" onClick={() => getDataOfOtherPlayer(playerName)}>{playerName}</button>
-            )
+            );
           })
         }
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <div>
@@ -101,4 +98,4 @@ export default TestTabs;
 
 TestTabs.propTypes = {
   playerName: PropTypes.string
-}
+};

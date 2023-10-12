@@ -61,7 +61,6 @@ const Tabs = ({ playerName, movedPlayer, showSelect = true }) => {
   };
 
   const getActivePlayerOtherTab = (playerValues) => {
-    console.log('events hdhdhd', playerValues);
     const val = Object.keys(playerValues?.[0])?.[0];
     setActiveTab(val);
     const content = playerValues?.find((item) => Object.keys(item)[0] === val);
@@ -75,10 +74,7 @@ const Tabs = ({ playerName, movedPlayer, showSelect = true }) => {
     //   setPlayerValues(data);
     //   setIsPlayerValuesAvailable(true);
     // });
-
-    console.log('events pop player socket');
     playerSocket.on('EMIT_VALUES_IN_ROOMS', data => {
-      console.log('the events', data);
       getActivePlayerOtherTab(data);
       setPlayerValues(data);
       setIsPlayerValuesAvailable(true);
@@ -101,11 +97,9 @@ const Tabs = ({ playerName, movedPlayer, showSelect = true }) => {
       {isPlayerValuesAvailable &&       
       <div className="tabs">
         {playerValues?.map((item) => {
-          console.log('the events item 1', item);
           if(Object.prototype.hasOwnProperty.call(item, playerName)){
             return;
           }
-          console.log('the events item', item);
           const tabTitle = Object.keys(item).filter(key => key !== playerName)[0];
           return (
             <div

@@ -19,7 +19,6 @@ const GameView = ({ playerObjects, gameViewRef }) => {
   const [playerValues, setPlayerValues] = useState([]);
 
   useEffect(() => {
-    console.log('re-rendering', playerObjects);
     setPlayerValues(playerObjects);
     
   }, [playerObjects]);
@@ -62,9 +61,7 @@ const GameView = ({ playerObjects, gameViewRef }) => {
   };
 
   function renderDroppedShapes() {
-    console.log('the player values', playerValues);
     return playerValues?.map((shape) => {
-      console.log('there is a shape', shape);
       if(JSON.stringify(shape) === '{}' || shape?.shapeUri === 'gameBox-main'){
         return;
       }
@@ -119,7 +116,6 @@ const GameView = ({ playerObjects, gameViewRef }) => {
 
       return (
         <div key={shape?.shapeUri} style={{position: 'absolute', transform: `translate(${shape?.x}px, ${shape?.y}px) rotate(${shape?.angle}deg)`}}>
-          {console.log('the shape events', shape?.shapeUri)}
           <img src={shapePath} id={shape?.shapeUri} className="shape-piece" width={getDimensions()?.width} height={getDimensions()?.height} />
           <p className="shape-text" style={{color: 'black', fontWeight: 'bold'}}>{shape?.shapeUri}</p>
         </div>

@@ -1,65 +1,65 @@
-import React, { useState } from "react";
-import { playerSocket } from "../../service/ConnectSocket";
-import DashboardMain from "./DashboardMain";
+import React, { useState } from 'react';
+import { playerSocket } from '../../service/ConnectSocket';
+import DashboardMain from './DashboardMain';
 
-const DashBoard = () =>  {
-    const [showOverlay, setShowOverlay] = useState(true);
-    const [roomId, setRoomId] = useState(null);
-    // const [newGameSprite, setNewGameSprite] = useState(null);
-    // const [playersInRoom, setPlayersInRoom] = useState([]);
-    const [showMainGame, setShowMainGame] = useState(false);
+const DashBoard = () => {
+  const [showOverlay, setShowOverlay] = useState(true);
+  const [roomId, setRoomId] = useState(null);
+  // const [newGameSprite, setNewGameSprite] = useState(null);
+  // const [playersInRoom, setPlayersInRoom] = useState([]);
+  const [showMainGame, setShowMainGame] = useState(false);
 
-    // useEffect(() => {
-    //     playerSocket.on('newGameSprite', (newSpriteObject) => {
-    //       setPlayersInRoom(newSpriteObject?.players);
-    //     });
+  // useEffect(() => {
+  //     playerSocket.on('newGameSprite', (newSpriteObject) => {
+  //       setPlayersInRoom(newSpriteObject?.players);
+  //     });
 
-    //     playerSocket.on('playergroundObjects', (playGroundObjects) => {
-    //       console.log("the playerObjects", playGroundObjects);
-    //     })
-    //   }, [playerSocket])
+  //     playerSocket.on('playergroundObjects', (playGroundObjects) => {
+  //       console.log("the playerObjects", playGroundObjects);
+  //     })
+  //   }, [playerSocket])
 
     
-      // useEffect(() => {
-      //   if(newGameSprite !== null){
-      //     setTimeout(() => {
-      //       setShowOverlay(false);
-      //       setShowMainGame(true);
-      //     }, 5000)
+  // useEffect(() => {
+  //   if(newGameSprite !== null){
+  //     setTimeout(() => {
+  //       setShowOverlay(false);
+  //       setShowMainGame(true);
+  //     }, 5000)
 
-      //   }
-      // }, [newGameSprite])
+  //   }
+  // }, [newGameSprite])
 
-    const handleJoinRoom = () => {
-        playerSocket.emit('registerAdmin', roomId);
-        playerSocket.emit('joinRoom', roomId, true, '');
-      };
+  const handleJoinRoom = () => {
+    playerSocket.emit('registerAdmin', roomId);
+    playerSocket.emit('joinRoom', roomId, true, '');
+  };
 
-    const handleStartGame = () => {
-        setShowMainGame(true);
-        setShowOverlay(false);
-        handleJoinRoom();
-        // setShowLoading(true);
-      };
+  const handleStartGame = () => {
+    setShowMainGame(true);
+    setShowOverlay(false);
+    handleJoinRoom();
+    // setShowLoading(true);
+  };
 
-    return(
-        <div>
-        {showOverlay && (
-            <div
-              style={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: "rgba(0, 0, 0, 0.5)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                zIndex: 999,
-              }}
-            >
-           <input
+  return(
+    <div>
+      {showOverlay && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 999,
+          }}
+        >
+          <input
             type="text"
             value={roomId}
             onChange={(e) => setRoomId(e.target.value)}
@@ -72,13 +72,13 @@ const DashBoard = () =>  {
           >
             Load Playground
           </button>
-            </div>
-          )}
-          {
-            showMainGame && <DashboardMain roomName={roomId}/>
-          }
-          </div>
-    )
-}
+        </div>
+      )}
+      {
+        showMainGame && <DashboardMain roomName={roomId}/>
+      }
+    </div>
+  );
+};
 
 export default DashBoard;

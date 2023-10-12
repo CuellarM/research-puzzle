@@ -1,19 +1,15 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './AnotherTest.css';
-import { playerSocket } from './service/ConnectSocket';
-import Tabs from './TabLocal';
-import SelectPlayer from './components/customSelect/SelectPlayer';
-import { SpriteRequestAlert } from './components/alert/SpriteAlert';
-import { PLAYER_PLAYS_CACHE } from './constants/Constants';
-import { shapeSvg, shapeSvg1, shapeSvg3, shapeSvg2 } from './images';
-import image from './puzzle-svgs/shape1.svg';
-import ShapeComponent from './components/ShapeComponent/ShapeComponent';
-import GameWorld from './components/GameWorld/GameWorld';
 import { Tooltip } from 'react-tooltip';
+import './AnotherTest.css';
+import Tabs from './TabLocal';
+import GameWorld from './components/GameWorld/GameWorld';
+import ShapeComponent from './components/ShapeComponent/ShapeComponent';
 import AlertModal from './components/alert/AlertModal';
+import { PLAYER_PLAYS_CACHE } from './constants/Constants';
+import { shapeSvg, shapeSvg1, shapeSvg2, shapeSvg3 } from './images';
+import { playerSocket } from './service/ConnectSocket';
 
 const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
 
@@ -44,7 +40,6 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
   const targetDropRef = useRef(null);
 
   useEffect(() => {
-    console.log('the shape is moved events', movedShape);
     emitSpritePositionToOtherPlayers(movedShape, false);
     if(!isEmpty(movedShape)){
       updateOrAddObjectOther(movedShape);
@@ -63,7 +58,6 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
     if (index !== -1) {
       // If the object already exists, replace it
       localStorageItems[index] = newObject;
-      console.log('local storage', localStorageItems);
       setLocalStorageItems(localStorageItems);
     } else {
       // If the object doesn't exist, add it
@@ -107,7 +101,6 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
       // Object exists - remove it
       const updatedValues = [...playedRef.current];
       updatedValues.splice(existingIndex, 1);
-      console.log('the updated values spliced', updatedValues);
       playedRef.current = updatedValues;
       playerSocket.emit('UPDATE_SPRITES_ACROSS_ROOM', roomId, playerName, playedRef.current);
     } 
@@ -166,7 +159,6 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
 
     if(playerObject){
       const object = playerObject;
-      console.log('the object', playerObject);
       // updateOrAddObjectOther(updateObjectOwner(playerObject, requestingPlayer));
       playerSocket.emit('sendToRequestingPlayer', requestingPlayer, playerObject);
       emitSpritePositionToOtherPlayers(playerObject, true);
@@ -258,7 +250,6 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
   // Sprites that you have requested for and received
   useEffect(() => {
     playerSocket.on('exchangedSprites', (spriteObject) => {
-      console.log('the exchanged sprite', spriteObject);
       handleRequestedSprites(spriteObject);
     });
   }, [playerSocket]);

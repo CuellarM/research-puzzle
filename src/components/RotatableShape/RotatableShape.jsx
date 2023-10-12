@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import React, { useState, useRef, useEffect } from "react";
-import "./RotatableShape.css";
+import React, { useRef, useState } from 'react';
+import './RotatableShape.css';
 
 const RotatableShape = ({setImageAngle, children }) => {
   const [rotateMode, setRotateMode] = useState(false);
@@ -45,36 +45,36 @@ const RotatableShape = ({setImageAngle, children }) => {
   return (
     <div
       style={{
-        position: "relative",
-        width: "fit-content",
-        height: "fit-content",
-        cursor: rotateMode ? "grabbing" : "grab",
+        position: 'relative',
+        width: 'fit-content',
+        height: 'fit-content',
+        cursor: rotateMode ? 'grabbing' : 'grab',
         transform: `rotate(${rotationAngle}deg)`
       }}
       ref={shapeRef}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
     >
-        <div         
+      <div         
         style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          position: "relative",
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'relative',
         }}>
-      <a
-        ref={buttonRef}
-        style={{
-            position: "absolute",
-            top: "55%",
-            left: "50%",
-            transform: "translate(-50%, -50%)", // Center the button
-        }}
-        onClick={handleButtonClick}
-      >
+        <a
+          ref={buttonRef}
+          style={{
+            position: 'absolute',
+            top: '55%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)', // Center the button
+          }}
+          onClick={handleButtonClick}
+        >
         🔄
-      </a>
-      {children}
+        </a>
+        {children}
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import React, { useEffect, useRef, useState } from 'react';
-import './ShapeComponent.css';
+import React, { useRef, useState } from 'react';
+import Draggable from 'react-draggable';
 import shapeA1 from '../../puzzle-svgs/shape-A1.svg';
 import shapeA2 from '../../puzzle-svgs/shape-A2.svg';
 import shapeA3 from '../../puzzle-svgs/shape-A3.svg';
@@ -13,9 +13,8 @@ import shapeB4 from '../../puzzle-svgs/shape-B4.svg';
 import shapeB5 from '../../puzzle-svgs/shape-B5.svg';
 import shapeB6 from '../../puzzle-svgs/shape-B6.svg';
 import RotatableShape from '../RotatableShape/RotatableShape';
-import Draggable from 'react-draggable';
+import './ShapeComponent.css';
 
-import { Tooltip } from 'react-tooltip';
 
 function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, shapeUri, setMovedShape, addOrUpdate, updateState }){
   const [activeDrags, setActiveDrag] = useState(0);
@@ -57,7 +56,6 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
       x: draggableRef.current.state.x,  
       y: draggableRef.current.state.y
     });
-    console.log('the initials drag', initialPos);
     setActiveDrag(activeDrags + 1);
   };
 
@@ -119,7 +117,6 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
       handleDrop(e);
       const rect = theRef.current.getBoundingClientRect();
       const shapeRect = divRef.current.getBoundingClientRect();
-      console.log('the rext', rect);
       const scale = rect.width / initialSize.width;
       const size = rect.width * 0.5;
       setInitialSize({

@@ -34,13 +34,13 @@ const SelectPlayer = ({ playerObject, handleRequest, playerName }) => {
   };
 
   const keys = players
-  ?.filter(item => Object?.keys(item)?.[0] !== playerName)
-  ?.map(item => Object?.keys(item)?.[0]);
+    ?.filter(item => Object?.keys(item)?.[0] !== playerName)
+    ?.map(item => Object?.keys(item)?.[0]);
 
   //const objects = selectedKey ? players?.find(item => Object?.keys(item)?.[0] === selectedKey)[selectedKey] : [];
   const objects = selectedKey ? players
-  ?.filter(item => selectedKey in item) // Filter objects that have the desired key
-  .map(item => item[selectedKey]) : [];
+    ?.filter(item => selectedKey in item) // Filter objects that have the desired key
+    .map(item => item[selectedKey]) : [];
 
   return (
     <div>
@@ -58,9 +58,9 @@ const SelectPlayer = ({ playerObject, handleRequest, playerName }) => {
           <option value="">-- Select a piece --</option>
           {objects?.[0]?.map(obj => {
             if(obj?.shapeUri){
-              return <option key={obj?.id} value={obj?.shapeUri}>{obj?.shapeUri}</option>
+              return <option key={obj?.id} value={obj?.shapeUri}>{obj?.shapeUri}</option>;
             }
-})}
+          })}
         </select>
       </div>
 
@@ -71,6 +71,6 @@ const SelectPlayer = ({ playerObject, handleRequest, playerName }) => {
       </div>
     </div>
   );
-}
+};
 
 export default SelectPlayer;
