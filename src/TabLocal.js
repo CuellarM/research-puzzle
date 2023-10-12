@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import GameView from "./GameView";
-import { playerSocket } from "./service/ConnectSocket";
-import "./TabLocal.css"
+import React, { useEffect, useRef, useState } from 'react';
+import GameView from './GameView';
+import './TabLocal.css';
 import GameWorld from './components/GameWorld/GameWorld';
 import SelectPlayer from './components/customSelect/SelectPlayer';
+import { playerSocket } from './service/ConnectSocket';
 
 const Tabs = ({ playerName, movedPlayer, showSelect = true }) => {
   // { vert: [ {}, [Object], [Object], [Object] ] },
@@ -24,7 +24,7 @@ const Tabs = ({ playerName, movedPlayer, showSelect = true }) => {
 
   const handleSpriteRequestToPlayer = (sendingPlayer, spriteName) => {
     playerSocket.emit('spriteRequest', playerName, spriteName, sendingPlayer);
-  }
+  };
 
   // for local testing
 
@@ -58,7 +58,7 @@ const Tabs = ({ playerName, movedPlayer, showSelect = true }) => {
     const content = playerValues?.find((item) => Object.keys(item)[0] === val);
     setTabContent(content[val]);
     setIsContentAvailable(true);
-  }
+  };
 
   const getActivePlayerOtherTab = (playerValues) => {
     console.log('events hdhdhd', playerValues);
@@ -67,7 +67,7 @@ const Tabs = ({ playerName, movedPlayer, showSelect = true }) => {
     const content = playerValues?.find((item) => Object.keys(item)[0] === val);
     setTabContent(content[val]);
     setIsContentAvailable(true);
-  }
+  };
   useEffect(() => {
     // Listen for playerValues events from other players
     // playerSocket.on('playerValues', data => {
@@ -76,9 +76,9 @@ const Tabs = ({ playerName, movedPlayer, showSelect = true }) => {
     //   setIsPlayerValuesAvailable(true);
     // });
 
-    console.log('events pop player socket')
+    console.log('events pop player socket');
     playerSocket.on('EMIT_VALUES_IN_ROOMS', data => {
-      console.log('the events', data)
+      console.log('the events', data);
       getActivePlayerOtherTab(data);
       setPlayerValues(data);
       setIsPlayerValuesAvailable(true);
@@ -88,24 +88,24 @@ const Tabs = ({ playerName, movedPlayer, showSelect = true }) => {
   return (
     <div>
       <div>
-      {!isContentAvailable && <div className='content'> <GameView /></div>}
-      {isContentAvailable &&       
+        {!isContentAvailable && <div className='content'> <GameView /></div>}
+        {isContentAvailable &&       
       <div id="remoteGameBox" ref={gameViewRef}>
         <GameWorld>
-          <GameView playerId={activeTab}  playerObjects={tabContent} gameViewRef={gameViewRef}/>
-         </GameWorld>
+          <GameView playerId={activeTab} playerObjects={tabContent} gameViewRef={gameViewRef}/>
+        </GameWorld>
       </div>
-      }
+        }
       </div>
       {!isPlayerValuesAvailable && <div> <h4> Player tabs would show here when other players start playing. </h4> </div>}
       {isPlayerValuesAvailable &&       
       <div className="tabs">
         {playerValues?.map((item) => {
-          console.log('the events item 1', item)
+          console.log('the events item 1', item);
           if(Object.prototype.hasOwnProperty.call(item, playerName)){
             return;
           }
-          console.log('the events item', item)
+          console.log('the events item', item);
           const tabTitle = Object.keys(item).filter(key => key !== playerName)[0];
           return (
             <div
@@ -123,9 +123,9 @@ const Tabs = ({ playerName, movedPlayer, showSelect = true }) => {
       {
         showSelect && (
           <div>
-          <h2>Request shapes from players</h2>
-          <SelectPlayer playerObject={playerValues} handleRequest={handleSpriteRequestToPlayer} playerName={playerName}/>
-        </div>
+            <h2>Request shapes from players</h2>
+            <SelectPlayer playerObject={playerValues} handleRequest={handleSpriteRequestToPlayer} playerName={playerName}/>
+          </div>
         )
       }
     </div>
@@ -136,4 +136,4 @@ export default Tabs;
 
 Tabs.propTypes = {
   playerName: PropTypes.string
-}
+};

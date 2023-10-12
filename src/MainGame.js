@@ -1,23 +1,23 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "./AnotherTest.css";
-import { playerSocket } from "./service/ConnectSocket";
-import Tabs from "./TabLocal";
-import SelectPlayer from "./components/customSelect/SelectPlayer";
-import { SpriteRequestAlert } from "./components/alert/SpriteAlert";
-import { PLAYER_PLAYS_CACHE } from "./constants/Constants";
-import { shapeSvg, shapeSvg1, shapeSvg3, shapeSvg2 } from "./images";
-import image from './puzzle-svgs/shape1.svg'
-import ShapeComponent from "./components/ShapeComponent/ShapeComponent";
-import GameWorld from "./components/GameWorld/GameWorld";
-import { Tooltip } from "react-tooltip";
-import AlertModal from "./components/alert/AlertModal";
+import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './AnotherTest.css';
+import { playerSocket } from './service/ConnectSocket';
+import Tabs from './TabLocal';
+import SelectPlayer from './components/customSelect/SelectPlayer';
+import { SpriteRequestAlert } from './components/alert/SpriteAlert';
+import { PLAYER_PLAYS_CACHE } from './constants/Constants';
+import { shapeSvg, shapeSvg1, shapeSvg3, shapeSvg2 } from './images';
+import image from './puzzle-svgs/shape1.svg';
+import ShapeComponent from './components/ShapeComponent/ShapeComponent';
+import GameWorld from './components/GameWorld/GameWorld';
+import { Tooltip } from 'react-tooltip';
+import AlertModal from './components/alert/AlertModal';
 
 const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
 
-  const [playerId, setPlayerId] = useState("");
+  const [playerId, setPlayerId] = useState('');
   const [otherPlayerValues, setOtherPlayerValues] = useState([]);
   const [removeName, setRemoveName] = useState('');
   const [droppedShapes, setDroppedShapes] = useState([]);
@@ -29,7 +29,7 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [requestObject, setRequestObject] = useState({});
-  const [objectJustReceived, setObjectJustReceived] = useState({})
+  const [objectJustReceived, setObjectJustReceived] = useState({});
   const playedRef = useRef([]);
 
   // useEffect(() => {
@@ -44,12 +44,12 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
   const targetDropRef = useRef(null);
 
   useEffect(() => {
-    console.log('the shape is moved events', movedShape)
+    console.log('the shape is moved events', movedShape);
     emitSpritePositionToOtherPlayers(movedShape, false);
     if(!isEmpty(movedShape)){
       updateOrAddObjectOther(movedShape);
     }
-  }, [movedShape])
+  }, [movedShape]);
 
 
   function isEmpty(obj) { 
@@ -63,19 +63,19 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
     if (index !== -1) {
       // If the object already exists, replace it
       localStorageItems[index] = newObject;
-      console.log('local storage', localStorageItems)
+      console.log('local storage', localStorageItems);
       setLocalStorageItems(localStorageItems);
     } else {
       // If the object doesn't exist, add it
-      localStorageItems.push(newObject)
+      localStorageItems.push(newObject);
       setLocalStorageItems(localStorageItems);
       // localStorageItems.push(newObject);
     }
 
     localStorage.setItem(localStorageKey, JSON.stringify(localStorageItems));
-  }
+  };
 
-    const updateOrAddObjectOther = (newObject) => {
+  const updateOrAddObjectOther = (newObject) => {
     const localStorageItems = playedRef.current;
     if(localStorageItems.length < 1){
       playedRef.current.push(newObject);
@@ -97,23 +97,23 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
     playerSocket.emit('UPDATE_SPRITES_ACROSS_ROOM', roomId, playerName, playedRef.current);
 
     // localStorage.setItem(localStorageKey, JSON.stringify(localStorageItems));
-  }
+  };
 
   const removeObjectAndUpdateRoom = (newObject) => {
     const localStorageItems = playedRef.current;
     const existingIndex = playedRef.current.findIndex(obj => obj.id === newObject.id);
 
     if(existingIndex !== -1) {
-  // Object exists - remove it
+      // Object exists - remove it
       const updatedValues = [...playedRef.current];
       updatedValues.splice(existingIndex, 1);
-      console.log('the updated values spliced', updatedValues)
+      console.log('the updated values spliced', updatedValues);
       playedRef.current = updatedValues;
       playerSocket.emit('UPDATE_SPRITES_ACROSS_ROOM', roomId, playerName, playedRef.current);
     } 
 
     // localStorage.setItem(localStorageKey, JSON.stringify(localStorageItems));
-  }
+  };
 
   const addObjectOrReplace = (newObject) => {
     setGameObjects((prevArray) => {
@@ -130,7 +130,7 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
 
       return newArray;
     });
-  }
+  };
 
 
 
@@ -138,80 +138,80 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
 
   // this removes the shape and passes it on to the requesting player
   const handleRemoveShape = (shapeName, requestingPlayer, gameSprites) => {
-      const shapeElement = document.getElementById(shapeName);
-      if (!shapeElement && !shapeElement?.classList?.contains('inbox')) {
-        console.error(`Shape element with ID '${shapeName}' not found.`);
-        return;
-      }
-    
-      const parentElement = shapeElement.parentNode;
-      // if (!parentElement || parentElement.id !== "gameBox") {
-      //   console.error(`Shape element is not a direct child of 'gameBox'.`);
-      //   return;
-      // }
-
-
-      if(parentElement.contains(shapeElement)){
-        parentElement.removeChild(shapeElement);
-      } else {
-        console.log('Element does not exist to be removed');
-      }
-
-      updateOrAddObject({
-        shapeUri: shapeName,
-        isVisible: false
-      })
-
-      const playerObject = gameSprites.find((obj) => obj?.shapeUri === shapeName);
-
-      if(playerObject){
-        const object = playerObject;
-        console.log('the object', playerObject)
-        // updateOrAddObjectOther(updateObjectOwner(playerObject, requestingPlayer));
-        playerSocket.emit('sendToRequestingPlayer', requestingPlayer, playerObject);
-        emitSpritePositionToOtherPlayers(playerObject, true);
-      }
-
-      // setGameObjects(gameObjects);
-      
-    };
-
-
-    const handleRemoveShapeV2 = (shapeName, requestingPlayer, gameSprites) => {
-
-      updateOrAddObject({
-        shapeUri: shapeName,
-        isVisible: false
-      })
-
-      const playerObject = gameSprites.find((obj) => obj?.shapeUri === shapeName);
-
-      if(playerObject){
-        playerObject['isVisible'] = false;
-        addObjectOrReplace(updateObjectOwner(playerObject, requestingPlayer));
-        // updateOrAddObjectOther(updateObjectownerOwner(playerObject, requestingPlayer));
-        playerSocket.emit('sendToRequestingPlayer', requestingPlayer, playerObject);
-        // emitSpritePositionToOtherPlayers(playerObject, true);
-        removeObjectAndUpdateRoom(playerObject);
-      }
-
-      // setGameObjects(gameObjects);
-      
-    };
-
-    const updateObjectOwner = (playerObject, playerId) => {
-      playerObject['owner'] = playerId;
-      playerObject['x'] = 0;
-      playerObject['y'] = 0;
-      playerObject['isOnBoard'] = true;
-      playerObject['isVisible'] = true;
-      return playerObject;
+    const shapeElement = document.getElementById(shapeName);
+    if (!shapeElement && !shapeElement?.classList?.contains('inbox')) {
+      console.error(`Shape element with ID '${shapeName}' not found.`);
+      return;
     }
+    
+    const parentElement = shapeElement.parentNode;
+    // if (!parentElement || parentElement.id !== "gameBox") {
+    //   console.error(`Shape element is not a direct child of 'gameBox'.`);
+    //   return;
+    // }
+
+
+    if(parentElement.contains(shapeElement)){
+      parentElement.removeChild(shapeElement);
+    } else {
+      console.log('Element does not exist to be removed');
+    }
+
+    updateOrAddObject({
+      shapeUri: shapeName,
+      isVisible: false
+    });
+
+    const playerObject = gameSprites.find((obj) => obj?.shapeUri === shapeName);
+
+    if(playerObject){
+      const object = playerObject;
+      console.log('the object', playerObject);
+      // updateOrAddObjectOther(updateObjectOwner(playerObject, requestingPlayer));
+      playerSocket.emit('sendToRequestingPlayer', requestingPlayer, playerObject);
+      emitSpritePositionToOtherPlayers(playerObject, true);
+    }
+
+    // setGameObjects(gameObjects);
+      
+  };
+
+
+  const handleRemoveShapeV2 = (shapeName, requestingPlayer, gameSprites) => {
+
+    updateOrAddObject({
+      shapeUri: shapeName,
+      isVisible: false
+    });
+
+    const playerObject = gameSprites.find((obj) => obj?.shapeUri === shapeName);
+
+    if(playerObject){
+      playerObject['isVisible'] = false;
+      addObjectOrReplace(updateObjectOwner(playerObject, requestingPlayer));
+      // updateOrAddObjectOther(updateObjectownerOwner(playerObject, requestingPlayer));
+      playerSocket.emit('sendToRequestingPlayer', requestingPlayer, playerObject);
+      // emitSpritePositionToOtherPlayers(playerObject, true);
+      removeObjectAndUpdateRoom(playerObject);
+    }
+
+    // setGameObjects(gameObjects);
+      
+  };
+
+  const updateObjectOwner = (playerObject, playerId) => {
+    playerObject['owner'] = playerId;
+    playerObject['x'] = 0;
+    playerObject['y'] = 0;
+    playerObject['isOnBoard'] = true;
+    playerObject['isVisible'] = true;
+    return playerObject;
+  };
 
   //Request to get sprite from another player
   const handleSpriteRequestToPlayer = (sendingPlayer, spriteName) => {
     playerSocket.emit('spriteRequest', playerName, spriteName, sendingPlayer);
-  }
+  };
 
   // Listening if anyone has requested from you
   useEffect(() => {
@@ -221,10 +221,10 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
         spriteName: spriteName,
         playerName: requestingPlayer,
         gameSprites: newGameSprite
-      })
+      });
       //SpriteRequestAlert(spriteName, requestingPlayer, newGameSprite, handleRemoveShape);
     });
-  }, [playerSocket])
+  }, [playerSocket]);
 
 
   const handleRequestedSprites = (spriteObject) => {
@@ -252,83 +252,83 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
     //   setGameObjects([...newGameSprite, spriteObject])
     //   // return [...prevObjects, spriteObject];
     // });
-  }
+  };
 
 
-    // Sprites that you have requested for and received
-    useEffect(() => {
-      playerSocket.on('exchangedSprites', (spriteObject) => {
-        console.log('the exchanged sprite', spriteObject)
-        handleRequestedSprites(spriteObject);
-      });
-    }, [playerSocket])
+  // Sprites that you have requested for and received
+  useEffect(() => {
+    playerSocket.on('exchangedSprites', (spriteObject) => {
+      console.log('the exchanged sprite', spriteObject);
+      handleRequestedSprites(spriteObject);
+    });
+  }, [playerSocket]);
 
 
-    useEffect(() => {
-      playerSocket.on(`${playerName}-${PLAYER_PLAYS_CACHE}-${roomId}`)
-    })
+  useEffect(() => {
+    playerSocket.on(`${playerName}-${PLAYER_PLAYS_CACHE}-${roomId}`);
+  });
 
-    const emitSpritePositionToOtherPlayers = (droppedShape, isRemove) => {
-      playerSocket.emit('playerValues', roomId, playerName, droppedShape, isRemove);
-    }
-
-
-    useEffect(() => {
-      setPlayerId(playerName);
-    }, [playerName])
+  const emitSpritePositionToOtherPlayers = (droppedShape, isRemove) => {
+    playerSocket.emit('playerValues', roomId, playerName, droppedShape, isRemove);
+  };
 
 
-    const distance = (x1, y1, x2, y2) => {
-        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-      }
+  useEffect(() => {
+    setPlayerId(playerName);
+  }, [playerName]);
 
-    const arePointsConnected = (point1, point2, threshold = 5)  =>{
-        const [x1, y1] = point1;
-        const [x2, y2] = point2;
 
-        console.log(distance(x1, y1, x2, y2))
-        return distance(x1, y1, x2, y2) <= threshold;
-    }
+  const distance = (x1, y1, x2, y2) => {
+    return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+  };
 
-    const hasFormedLargerTriangle = (shapes) => {
-        // Calculate the center of mass of the vertices
-        const centerOfMass = shapes.reduce(
-          (acc, shape) => {
-            const { vertices } = shape;
-            const shapeCenterOfMass = vertices.reduce(
-              (shapeAcc, vertex) => ({
-                x: shapeAcc.x + vertex[0] / vertices.length,
-                y: shapeAcc.y + vertex[1] / vertices.length,
-              }),
-              { x: 0, y: 0 }
-            );
-            return {
-              x: acc.x + shapeCenterOfMass.x / shapes.length,
-              y: acc.y + shapeCenterOfMass.y / shapes.length,
-            };
-          },
+  const arePointsConnected = (point1, point2, threshold = 5) =>{
+    const [x1, y1] = point1;
+    const [x2, y2] = point2;
+
+    console.log(distance(x1, y1, x2, y2));
+    return distance(x1, y1, x2, y2) <= threshold;
+  };
+
+  const hasFormedLargerTriangle = (shapes) => {
+    // Calculate the center of mass of the vertices
+    const centerOfMass = shapes.reduce(
+      (acc, shape) => {
+        const { vertices } = shape;
+        const shapeCenterOfMass = vertices.reduce(
+          (shapeAcc, vertex) => ({
+            x: shapeAcc.x + vertex[0] / vertices.length,
+            y: shapeAcc.y + vertex[1] / vertices.length,
+          }),
           { x: 0, y: 0 }
         );
+        return {
+          x: acc.x + shapeCenterOfMass.x / shapes.length,
+          y: acc.y + shapeCenterOfMass.y / shapes.length,
+        };
+      },
+      { x: 0, y: 0 }
+    );
 
         
       
-        // Check if all vertices are close to the center of mass
-        const maxDistance = 200; // Maximum allowed distance from the center of mass
+    // Check if all vertices are close to the center of mass
+    const maxDistance = 200; // Maximum allowed distance from the center of mass
 
-        var led = shapes.every((shape) =>
-        shape.vertices.every(
-          (vertex) => {
-            Math.abs(vertex[0] - centerOfMass.x) <= maxDistance && Math.abs(vertex[1] - centerOfMass.y) <= maxDistance
-          }
-            // Math.abs(vertex.x - centerOfMass.x) <= maxDistance && Math.abs(vertex.y - centerOfMass.y) <= maxDistance
-        )
-      );
+    var led = shapes.every((shape) =>
+      shape.vertices.every(
+        (vertex) => {
+          Math.abs(vertex[0] - centerOfMass.x) <= maxDistance && Math.abs(vertex[1] - centerOfMass.y) <= maxDistance;
+        }
+        // Math.abs(vertex.x - centerOfMass.x) <= maxDistance && Math.abs(vertex.y - centerOfMass.y) <= maxDistance
+      )
+    );
 
-        return led;
-      };
+    return led;
+  };
       
 
-    const snapThreshold = 15;
+  const snapThreshold = 15;
   
   const [selectedShape, setSelectedShape] = useState(null);
   const collisionThreshold = 5; // Adjust this value as needed
@@ -344,20 +344,20 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
       let newTop = currentTop;
   
       switch (e.key) {
-        case "ArrowUp":
-          newTop -= 5;
-          break;
-        case "ArrowDown":
-          newTop += 5;
-          break;
-        case "ArrowLeft":
-          newLeft -= 5;
-          break;
-        case "ArrowRight":
-          newLeft += 5;
-          break;
-        default:
-          break;
+      case 'ArrowUp':
+        newTop -= 5;
+        break;
+      case 'ArrowDown':
+        newTop += 5;
+        break;
+      case 'ArrowLeft':
+        newLeft -= 5;
+        break;
+      case 'ArrowRight':
+        newLeft += 5;
+        break;
+      default:
+        break;
       }
   
       const newVertices = calculateVertices(selectedShape, newLeft, newTop);
@@ -388,14 +388,14 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
           ...droppedShapes.slice(selectedShapeIndex + 1),
         ];
         setDroppedShapes(updatedDroppedShapes);
-        playerSocket.emit('updatedPlayerValues', roomId, playerName, updatedShape) 
+        playerSocket.emit('updatedPlayerValues', roomId, playerName, updatedShape); 
       }
     };
   
-    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
   
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, [selectedShape]);
   
@@ -406,20 +406,20 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
   };
 
   useEffect(() => {
-    const gameBox = document.getElementById("gameBox");
-    const shapesContainer = document.getElementById("shapesContainer");
+    const gameBox = document.getElementById('gameBox');
+    const shapesContainer = document.getElementById('shapesContainer');
   
-    gameBox.addEventListener("dragover", handleDragOver);
-    gameBox.addEventListener("drop", handleDrop);
+    gameBox.addEventListener('dragover', handleDragOver);
+    gameBox.addEventListener('drop', handleDrop);
   
     return () => {
-      gameBox.removeEventListener("dragover", handleDragOver);
-      gameBox.removeEventListener("drop", handleDrop);
+      gameBox.removeEventListener('dragover', handleDragOver);
+      gameBox.removeEventListener('drop', handleDrop);
     };
   }, [droppedShapes]);
 
   const handleDragStart = (e, id) => {
-    e.dataTransfer.setData("text/plain", id);
+    e.dataTransfer.setData('text/plain', id);
   };
 
   const handleDragOver = (e) => {
@@ -449,30 +449,30 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
     ];
   
     return vertices;
-  }
+  };
 
 
   const handleDrop = (e) => {
     e.preventDefault();
-    const shapeId = e.dataTransfer.getData("text");
+    const shapeId = e.dataTransfer.getData('text');
     const shape = document.getElementById(shapeId);
-    const box = e.target.closest("#gameBox");
+    const box = e.target.closest('#gameBox');
 
     if (!shape || !box) return;
 
     const x = e.clientX - box.getBoundingClientRect().left - shape.offsetWidth / 2;
     const y = e.clientY - box.getBoundingClientRect().top - shape.offsetHeight / 2;
 
-    shape.style.position = "absolute";
+    shape.style.position = 'absolute';
     shape.style.left = `${x}px`;
     shape.style.top = `${y}px`;
 
-    if (!shape.classList.contains("inBox")) {
+    if (!shape.classList.contains('inBox')) {
       shape.parentNode.removeChild(shape);
       if (shape.parentNode !== box) {
         box.appendChild(shape);
       }
-      shape.classList.add("inBox");
+      shape.classList.add('inBox');
 
       const vertices = calculateVertices(shape, e.clientX - box.getBoundingClientRect().left, e.clientY - box.getBoundingClientRect().top);
 
@@ -486,7 +486,7 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
         borderWidth: shape?.style?.borderWidth,
         transform: shape?.style?.transform,
         vertices,
-      }
+      };
 
       const newDroppedShapes = [
         ...droppedShapes,
@@ -500,7 +500,7 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
       emitSpritePositionToOtherPlayers(droppedShapeObject, false);
     }
 
-    const inBoxShapes = Array.from(box.getElementsByClassName("shape inBox"));
+    const inBoxShapes = Array.from(box.getElementsByClassName('shape inBox'));
 
     inBoxShapes.forEach((otherShape) => {
       if (otherShape.id !== shapeId) {
@@ -529,108 +529,90 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
   shapelist.push(shapeSvg3);
 
   const removeTestFunction = (playerObject, requestingPlayer) => {
-    addObjectOrReplace(updateObjectOwner(playerObject, requestingPlayer))
-  }
+    addObjectOrReplace(updateObjectOwner(playerObject, requestingPlayer));
+  };
 
   const updateState = (object) => {
     addObjectOrReplace(object);
-  }
+  };
 
-  const objTest = {
-    id: 'p2-01-A3',
-    isVisible: true,
-    shapeUri: 'shapeA3-032',
-    owner: 'bhjjh',
-    isOnBoard: true,
-    x: 0,
-    y: 0
-  }
+  // const objTest = {
+  //   id: 'p2-01-A3',
+  //   isVisible: true,
+  //   shapeUri: 'shapeA3-032',
+  //   owner: 'bhjjh',
+  //   isOnBoard: true,
+  //   x: 0,
+  //   y: 0
+  // }
 
   return (
     <div className="body container">
       <div className="left">
         {/* for local testing */}
-      {/* <Tabs playerName={playerName} movedPlayer={movedShape}/> */}
+        {/* <Tabs playerName={playerName} movedPlayer={movedShape}/> */}
         <Tabs playerName={playerName}/>
       </div>
 
       <div className="right">
-      <div>
-        <button onClick={() => removeTestFunction(objTest, 'testReqPlayer') }>Remove</button>
-      <div>{playerName}</div>
-        <div id="gameBox" ref={targetDropRef}>
-        <GameWorld id={"gameBox-main"}> 
-        {
-        newGameSprite?.map((shape, index) => {
-          console.log('the shape events map', shape)
-          const isOwner = shape?.owner === playerId;
-          console.log('is owner', isOwner)
-          if(shape?.isVisible && isOwner && !shape?.isOnBoard){
-            return (<ShapeComponent 
-                key={index} 
-                shape={shape} 
-                handleShapeClick={handleShapeClick} 
-                handleDragStart={(e, data) => handleDragStart(e,data)}  
-                theRef={targetDropRef} 
-                shapeUri={shape?.shapeUri}
-                setMovedShape={setMovedShape}
-                addOrUpdate={updateOrAddObject}
-                updateState={updateState}
-            />
-            );
+        <div>
+          <div id="gameBox" ref={targetDropRef}>
+            <GameWorld id={'gameBox-main'}> 
+              {
+                newGameSprite?.map((shape, index) => {
+                  const isOwner = shape?.owner === playerId;
+                  if(shape?.isVisible && isOwner && !shape?.isOnBoard){
+                    return (<ShapeComponent 
+                      key={index} 
+                      shape={shape} 
+                      handleShapeClick={handleShapeClick} 
+                      handleDragStart={(e, data) => handleDragStart(e,data)}  
+                      theRef={targetDropRef} 
+                      shapeUri={shape?.shapeUri}
+                      setMovedShape={setMovedShape}
+                      addOrUpdate={updateOrAddObject}
+                      updateState={updateState}
+                    />
+                    );
+                  }
+                })
+              }
+            </GameWorld>
+          </div>
+          <div id="shape" className="shape">
+            {
+              newGameSprite?.map((shape, index) => {
+                const isOwner = shape?.owner === playerId;
+                if(shape?.isOnBoard && isOwner && shape?.isVisible){
+                  return (
+                    <ShapeComponent 
+                      key={index} 
+                      shape={shape} 
+                      handleShapeClick={handleShapeClick} 
+                      handleDragStart={(e, data) => handleDragStart(e,data)}  
+                      theRef={targetDropRef} 
+                      shapeUri={shape?.shapeUri}
+                      setMovedShape={setMovedShape}
+                      addOrUpdate={updateOrAddObject}
+                      updateState={updateState}
+                    />
+                  );
+                }
+              })
             }
-        })
-      }
-        </GameWorld>
+            <Tooltip
+              id="my-tooltip"
+            />
+          </div>
+          <AlertModal isOpen={isModalOpen} setModalOpen={setModalOpen} requestObject={requestObject} handleRemoveShape={handleRemoveShapeV2}/>
         </div>
-        <div id="shape" className="shape">
-    {console.log('the sprites new', newGameSprite)}
-      {
-        newGameSprite?.map((shape, index) => {
-          console.log('the shape events map', shape)
-          const isOwner = shape?.owner === playerId;
-          console.log('is owner', isOwner)
-          if(shape?.isOnBoard && isOwner && shape?.isVisible){
-            return (<ShapeComponent 
-                key={index} 
-                shape={shape} 
-                handleShapeClick={handleShapeClick} 
-                handleDragStart={(e, data) => handleDragStart(e,data)}  
-                theRef={targetDropRef} 
-                shapeUri={shape?.shapeUri}
-                setMovedShape={setMovedShape}
-                addOrUpdate={updateOrAddObject}
-                updateState={updateState}
-            />
-            );
-            }
-        })
-      }
-      {/* {
-        requestedObject?.map((shape, index) => {
-          const isOwner = shape?.owner === playerId;
-          if(isOwner){
-            return (
-              <ShapeComponent 
-                key={index} 
-                shape={shape} 
-                handleShapeClick={handleShapeClick} 
-                handleDragStart={(e, data) => handleDragStart(e,data)}  
-                theRef={targetDropRef} 
-                shapeUri={shape?.shapeUri}
-                setMovedShape={setMovedShape}
-                addOrUpdate={updateOrAddObject}
-              />
-            )
-          }
-        })
-      } */}
-        <Tooltip
-          id="my-tooltip"
-        />
       </div>
-      <AlertModal  isOpen={isModalOpen} setModalOpen={setModalOpen} requestObject={requestObject} handleRemoveShape={handleRemoveShapeV2}/>
-      </div>
+      <div>
+        <div>Info:</div>
+        <a className="player-details" style={{justifySelf: 'flex-end'}}> ℹ️</a>
+        <Tooltip anchorSelect=".player-details" place="top">
+        Playing name: {playerName}
+        </Tooltip>
       </div>
     </div>
   );
