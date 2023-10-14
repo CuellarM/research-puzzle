@@ -570,31 +570,33 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
               }
             </GameWorld>
           </div>
-          <div id="shape" className="shape">
+          <div style={{display: 'flex'}}>
             {
               newGameSprite?.map((shape, index) => {
                 const isOwner = shape?.owner === playerId;
                 if(shape?.isOnBoard && isOwner && shape?.isVisible){
                   return (
-                    <ShapeComponent 
-                      key={index} 
-                      shape={shape} 
-                      handleShapeClick={handleShapeClick} 
-                      handleDragStart={(e, data) => handleDragStart(e,data)}  
-                      theRef={targetDropRef} 
-                      shapeUri={shape?.shapeUri}
-                      setMovedShape={setMovedShape}
-                      addOrUpdate={updateOrAddObject}
-                      updateState={updateState}
-                    />
+                    <div className="onBoardShape" key={index}>
+                      <ShapeComponent 
+                        key={index} 
+                        shape={shape} 
+                        handleShapeClick={handleShapeClick} 
+                        handleDragStart={(e, data) => handleDragStart(e,data)}  
+                        theRef={targetDropRef} 
+                        shapeUri={shape?.shapeUri}
+                        setMovedShape={setMovedShape}
+                        addOrUpdate={updateOrAddObject}
+                        updateState={updateState}
+                      />
+                    </div>
                   );
                 }
               })
             }
-            <Tooltip
-              id="my-tooltip"
-            />
           </div>
+          <Tooltip
+            id="my-tooltip"
+          />
           <AlertModal isOpen={isModalOpen} setModalOpen={setModalOpen} requestObject={requestObject} handleRemoveShape={handleRemoveShapeV2}/>
         </div>
       </div>
@@ -602,8 +604,8 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
         <div>Info:</div>
         <a className="player-details" style={{justifySelf: 'flex-end'}}> ℹ️</a>
         <Tooltip anchorSelect=".player-details" place="top">
-        Playing name: {playerName}
-        Room id: {roomId}
+          <p>Playing name: {playerName}</p>
+          <p>Room Id: {roomId}</p>
         </Tooltip>
       </div>
     </div>

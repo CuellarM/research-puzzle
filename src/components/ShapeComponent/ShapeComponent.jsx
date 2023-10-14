@@ -239,6 +239,7 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
 
     let height = initialSize?.height;
     let width = initialSize?.width;
+    let color = 'black';
 
     switch(getBeforeHyphen(shapeUri)){
     case 'shapeA2':
@@ -257,27 +258,67 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
       height = initialSize?.height + 90;
       width = initialSize?.width - 10;
       break;
+    case 'shapeB1':
+      height = initialSize?.height + 106;
+      width = initialSize?.width + 54;
+      color = 'darkorange';
+      break;
+    case 'shapeB2':
+      height = initialSize?.height + 165;
+      width = initialSize?.width + 100;
+      color = 'darkorange';
+      break;
+    case 'shapeB3':
+      height = initialSize?.height + 165;
+      width = initialSize?.width + 100;
+      color = 'darkorange';
+      break;
+    case 'shapeB4':
+      height = initialSize?.height + 100;
+      width = initialSize?.width + 44;
+      color = 'darkorange';
+      break;
+    case 'shapeB5':
+      height = initialSize?.height + 100;
+      width = initialSize?.width + 54;
+      color = 'darkorange';
+      break;
+    case 'shapeB6':
+      height = initialSize?.height + 100;
+      width = initialSize?.width + 44;
+      color = 'darkorange';
+      break;
     default:
       height = initialSize?.height;
       width = initialSize?.width;
+      color = 'black';
     }
 
     return {
       height: height,
-      width: width
+      width: width,
+      color: color
     };
   };
   
   return (
     <div id={shapeUri} ref={currDraggableRef}>
-      {console.log('the id', shapeUri)}
       <Draggable id={shapeUri} onDrag={handleDrag} {...dragHandlers} onStop={handleDraggableDrop} ref={draggableRef} defaultPosition={{x: shape?.x || 0, y: shape?.y || 0}}>
-        <div className={`handle ${shapeUri} svg-containerImg`} ref={divRef} style={{position: 'absolute', justifyItems: 'baseline'}}>
-          <RotatableShape setImageAngle={setImgAngle}>
-            <img src={shapePath} id={`${shapeUri}`} className="shape-piece" width={getDimensions()?.width} height={getDimensions()?.height}/>
-            <p className="shape-text" style={{color: 'black', fontWeight: 'bold', marginTop: '50px'}}>{shape?.shapeUri}</p>
-            {/* <span className="shape-text" style={{marginBottom: "100px"}}>{shapeUri}</span> */}
-          </RotatableShape>
+        <div className={`handle ${shapeUri} svg-containerImg`} ref={divRef} style={{position: 'absolute'}}>
+          {!shape?.isOnBoard && (
+            <RotatableShape setImageAngle={setImgAngle}>
+              <img src={shapePath} style={{
+                pointerEvents: activeDrags === 1 ? 'auto' : 'none',
+                // zIndex: activeDrags === 1 ? 10 : 1,
+              }} id={`${shapeUri}`} className="shape-piece" width={shape?.isOnBoard ? '120px' : getDimensions()?.width} height={shape?.isOnBoard ? '120px' : getDimensions()?.height}/>
+              <p className="shape-text" style={{color: getDimensions()?.color, fontWeight: 'bold', marginTop: '50px', zIndex: 20}}>{shape?.shapeUri}</p>
+            </RotatableShape>
+          )}
+          {shape?.isOnBoard && (
+            <div style={{position: 'absolute'}}>
+              <img src={shapePath} id={`${shapeUri}`} className="shape-piece" width={shape?.isOnBoard ? '120px' : getDimensions()?.width} height={shape?.isOnBoard ? '120px' : getDimensions()?.height}/>
+            </div>
+          )}
         </div>
       </Draggable>
     </div>

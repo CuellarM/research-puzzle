@@ -49,7 +49,8 @@ const RotatableShape = ({setImageAngle, children }) => {
         width: 'fit-content',
         height: 'fit-content',
         cursor: rotateMode ? 'grabbing' : 'grab',
-        transform: `rotate(${rotationAngle}deg)`
+        transform: `rotate(${rotationAngle}deg)`,
+        zIndex: 20
       }}
       ref={shapeRef}
       onMouseMove={handleMouseMove}

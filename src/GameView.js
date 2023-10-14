@@ -85,6 +85,7 @@ const GameView = ({ playerObjects, gameViewRef }) => {
       const getDimensions = () => {
         let height = initialSize?.height;
         let width = initialSize?.width;
+        let color = 'black';
 
         switch(getBeforeHyphen(shape?.shapeUri)){
         case 'shapeA2':
@@ -103,21 +104,53 @@ const GameView = ({ playerObjects, gameViewRef }) => {
           height = initialSize?.height + 90;
           width = initialSize?.width - 10;
           break;
+        case 'shapeB1':
+          height = initialSize?.height + 106;
+          width = initialSize?.width + 54;
+          color = 'darkorange';
+          break;
+        case 'shapeB2':
+          height = initialSize?.height + 165;
+          width = initialSize?.width + 100;
+          color = 'darkorange';
+          break;
+        case 'shapeB3':
+          height = initialSize?.height + 165;
+          width = initialSize?.width + 100;
+          color = 'darkorange';
+          break;
+        case 'shapeB4':
+          height = initialSize?.height + 100;
+          width = initialSize?.width + 44;
+          color = 'darkorange';
+          break;
+        case 'shapeB5':
+          height = initialSize?.height + 100;
+          width = initialSize?.width + 54;
+          color = 'darkorange';
+          break;
+        case 'shapeB6':
+          height = initialSize?.height + 100;
+          width = initialSize?.width + 44;
+          color = 'darkorange';
+          break;
         default:
           height = initialSize?.height;
           width = initialSize?.width;
+          color = 'black';
         }
 
         return {
           height: height,
-          width: width
+          width: width,
+          color: color
         };
       };
 
       return (
         <div key={shape?.shapeUri} style={{position: 'absolute', transform: `translate(${shape?.x}px, ${shape?.y}px) rotate(${shape?.angle}deg)`}}>
           <img src={shapePath} id={shape?.shapeUri} className="shape-piece" width={getDimensions()?.width} height={getDimensions()?.height} />
-          <p className="shape-text" style={{color: 'black', fontWeight: 'bold'}}>{shape?.shapeUri}</p>
+          <p className="shape-text" style={{color: getDimensions()?.color, fontWeight: 'bold'}}>{shape?.shapeUri}</p>
         </div>
       );
     });
