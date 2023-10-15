@@ -101,7 +101,7 @@ const StartPage = () => {
   }, [newGameSprite]);
 
   const handleJoinRoom = () => {
-    localStorage.setItem('playerCacheName', playerName+roomId);
+    localStorage.setItem('playerCacheName', playerName+roomId+selectedLevel);
     playerSocket.emit('registerPlayer', playerName);
     playerSocket.emit('joinRoom', roomId, false, selectedLevel);
   };
@@ -174,7 +174,14 @@ const StartPage = () => {
             </div>
       }
       {
-        showMainGame && <MainGame gameObjects={newGameSprite} playersInRoom={playersInRoom} playerName={playerName} roomId={roomId}/>
+        showMainGame && 
+        <MainGame 
+          gameObjects={newGameSprite} 
+          playersInRoom={playersInRoom} 
+          playerName={playerName} 
+          roomId={roomId} 
+          level={selectedLevel}
+        />
       }
       {/* <MainGame gameObjects={testObjects} playersInRoom={playersInRoom} playerName={playerNameTest} roomId={'roomea'}/> */}
     </div>

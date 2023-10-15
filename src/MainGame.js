@@ -7,11 +7,12 @@ import Tabs from './TabLocal';
 import GameWorld from './components/GameWorld/GameWorld';
 import ShapeComponent from './components/ShapeComponent/ShapeComponent';
 import AlertModal from './components/alert/AlertModal';
+import HintModal from './components/hint/Hint';
 import { PLAYER_PLAYS_CACHE } from './constants/Constants';
 import { shapeSvg, shapeSvg1, shapeSvg2, shapeSvg3 } from './images';
 import { playerSocket } from './service/ConnectSocket';
 
-const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
+const MainGame = ({gameObjects, playersInRoom, playerName, roomId, level}) => {
 
   const [playerId, setPlayerId] = useState('');
   const [otherPlayerValues, setOtherPlayerValues] = useState([]);
@@ -24,6 +25,7 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
   const [playedValues, setPlayedValues] = useState([]);
 
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isHintModalOpen, setHintModalOpen] = useState(false);
   const [requestObject, setRequestObject] = useState({});
   const [objectJustReceived, setObjectJustReceived] = useState({});
   const playedRef = useRef([]);
@@ -33,7 +35,7 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
   // }, [gameObjects])
 
   //room + name => key
-  const localStorageKey = playerName + roomId;
+  const localStorageKey = playerName + roomId + level;
   localStorageKey?.toLowerCase();
   // localStorage.getItem(localStorageKey)
 
@@ -66,7 +68,7 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
       // localStorageItems.push(newObject);
     }
 
-    localStorage.setItem(localStorageKey, JSON.stringify(localStorageItems));
+    // localStorage.setItem(localStorageKey, JSON.stringify(localStorageItems));
   };
 
   const updateOrAddObjectOther = (newObject) => {
@@ -121,6 +123,7 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
         newArray.push(newObject);
       }
 
+      localStorage.setItem(localStorageKey, JSON.stringify(newArray));
       return newArray;
     });
   };
@@ -598,10 +601,13 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId}) => {
             id="my-tooltip"
           />
           <AlertModal isOpen={isModalOpen} setModalOpen={setModalOpen} requestObject={requestObject} handleRemoveShape={handleRemoveShapeV2}/>
+          <HintModal isOpen={isHintModalOpen} setModalOpen={setHintModalOpen} />
         </div>
       </div>
-      <div>
-        <div>Info:</div>
+      <div style={{margin: '10px', marginRight: '20px'}}>
+        <button onClick={() => setHintModalOpen(true)}>Hint</button>
+      </div>
+      <div style={{marginTop: '10px'}}>
         <a className="player-details" style={{justifySelf: 'flex-end'}}> ℹ️</a>
         <Tooltip anchorSelect=".player-details" place="top">
           <p>Playing name: {playerName}</p>

@@ -1,0 +1,7 @@
+.image {
+    transition: transform 0.5s; /* Add a smooth transition effect */
+  }
+  
+  .rotate {
+    transform: rotate(180deg); /* Rotate the image by 45 degrees when the 'rotate' class is applied */
+  }

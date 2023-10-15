@@ -311,7 +311,7 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
                 pointerEvents: activeDrags === 1 ? 'auto' : 'none',
                 // zIndex: activeDrags === 1 ? 10 : 1,
               }} id={`${shapeUri}`} className="shape-piece" width={shape?.isOnBoard ? '120px' : getDimensions()?.width} height={shape?.isOnBoard ? '120px' : getDimensions()?.height}/>
-              <p className="shape-text" style={{color: getDimensions()?.color, fontWeight: 'bold', marginTop: '50px', zIndex: 20}}>{shape?.shapeUri}</p>
+              <p className="shape-text" style={{color: getDimensions()?.color, fontWeight: 'bold', marginTop: '50px', zIndex: 20, fontSize: '0.7em'}}>{shape?.shapeUri}</p>
             </RotatableShape>
           )}
           {shape?.isOnBoard && (
