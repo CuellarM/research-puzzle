@@ -1,8 +1,9 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 import Modal from 'react-modal';
-import Complete from './Complete.png';
+import Complicated from './Complicated1.png';
 import './Hint.css';
+import Simple from './Simple1.png';
 
 const customStyles = {
   content: {
@@ -15,7 +16,7 @@ const customStyles = {
   },
 };
 
-const HintModal = ({isOpen, setModalOpen}) => {
+const HintModal = ({isOpen, setModalOpen, gameLevel}) => {
   const handleCloseModal = () => {
     setModalOpen(false);
   };
@@ -38,7 +39,7 @@ const HintModal = ({isOpen, setModalOpen}) => {
         contentLabel="Request for Shape"
       >
         <div style={{padding: '10px'}}>
-          <img src={Complete} width={420} height={420} className={`image ${rotateClass}`}/>
+          <img src={gameLevel === 'LEVEL_1' ? Simple : Complicated} width={420} height={420} className={`image ${rotateClass}`}/>
           <div style={{marginTop: '20px', alignItems: 'center', justifyContent: 'center', display: 'flex', alignSelf: 'center', padding: '10px'}}>
             <button style={{color: 'white', backgroundColor: 'green', margin: '5px'}} onClick={() => handleImageRotate()}>Rotate</button>
             <button style={{color: 'white', backgroundColor: 'red', margin: '5px'}} onClick={() => handleCloseModal()}>Close</button>

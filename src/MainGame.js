@@ -601,7 +601,7 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId, level}) => {
             id="my-tooltip"
           />
           <AlertModal isOpen={isModalOpen} setModalOpen={setModalOpen} requestObject={requestObject} handleRemoveShape={handleRemoveShapeV2}/>
-          <HintModal isOpen={isHintModalOpen} setModalOpen={setHintModalOpen} />
+          <HintModal isOpen={isHintModalOpen} setModalOpen={setHintModalOpen} gameLevel={level}/>
         </div>
       </div>
       <div style={{margin: '10px', marginRight: '20px'}}>
