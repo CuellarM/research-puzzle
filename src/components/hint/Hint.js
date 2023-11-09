@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 import Modal from 'react-modal';
-import Complicated from './Complicated1.png';
+import Complicated from './Complicated2.jpg';
 import './Hint.css';
-import Simple from './Simple1.png';
+import Simple from './Simple2.jpg';
 
 const customStyles = {
   content: {
