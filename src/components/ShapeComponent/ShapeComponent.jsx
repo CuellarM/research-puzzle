@@ -243,20 +243,20 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
 
     switch(getBeforeHyphen(shapeUri)){
     case 'shapeA1':
-      height = initialSize?.height + 340;
-      width = initialSize?.width + 250;
+      height = (initialSize?.height + 340)/2;
+      width = (initialSize?.width + 250)/2;
       break;
     case 'shapeA2':
-      height = initialSize?.height + 250;
-      width = initialSize?.width + 520;
+      height = (initialSize?.height + 250)/2;
+      width = (initialSize?.width + 520)/2;
       break;
     case 'shapeA3':
-      height = initialSize?.height + 100;
-      width = initialSize?.width - 20;
+      height = (initialSize?.height + 100)/2;
+      width = (initialSize?.width - 20)/2;
       break;
     case 'shapeA4':
-      height = initialSize?.height + 160;
-      width = initialSize?.width + 250;
+      height = (initialSize?.height + 160)/2;
+      width = (initialSize?.width + 250)/2;
       break;
     case 'shapeB1':
       height = initialSize?.height + 106;
