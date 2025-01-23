@@ -49,14 +49,14 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId, level}) => {
   }, [movedShape]);
 
 
-  function isEmpty(obj) { 
+  function isEmpty(obj) {
     for (var x in obj) { return false; }
     return true;
   }
 
   const updateOrAddObject = (newObject) => {
     const index = localStorageItems?.findIndex(item => item?.id === newObject?.id);
-  
+
     if (index !== -1) {
       // If the object already exists, replace it
       localStorageItems[index] = newObject;
@@ -85,8 +85,8 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId, level}) => {
       const updatedValues = [...playedRef.current];
       updatedValues[existingIndex] = newObject;
       playedRef.current = updatedValues;
-  
-    } else {  
+
+    } else {
       // Object doesn't exist - add it
       playedRef.current.push(newObject);
     }
@@ -105,7 +105,7 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId, level}) => {
       updatedValues.splice(existingIndex, 1);
       playedRef.current = updatedValues;
       playerSocket.emit('UPDATE_SPRITES_ACROSS_ROOM', roomId, playerName, playedRef.current);
-    } 
+    }
 
     // localStorage.setItem(localStorageKey, JSON.stringify(localStorageItems));
   };
@@ -139,7 +139,7 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId, level}) => {
       console.error(`Shape element with ID '${shapeName}' not found.`);
       return;
     }
-    
+
     const parentElement = shapeElement.parentNode;
     // if (!parentElement || parentElement.id !== "gameBox") {
     //   console.error(`Shape element is not a direct child of 'gameBox'.`);
@@ -168,7 +168,7 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId, level}) => {
     }
 
     // setGameObjects(gameObjects);
-      
+
   };
 
 
@@ -191,7 +191,7 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId, level}) => {
     }
 
     // setGameObjects(gameObjects);
-      
+
   };
 
   const updateObjectOwner = (playerObject, playerId) => {
@@ -237,12 +237,12 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId, level}) => {
     //   if( typeof prevObjects === 'undefined'){
     //     objectExists = prevObjects?.some(obj => obj === spriteObject);
     //   }
-    
+
     //   // If the object already exists, return the previous array
     //   if (objectExists) {
     //     return prevObjects;
     //   }
-    
+
     //   // If the object doesn't exist, add it to the array
     //   setGameObjects([...newGameSprite, spriteObject])
     //   // return [...prevObjects, spriteObject];
@@ -304,8 +304,8 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId, level}) => {
       { x: 0, y: 0 }
     );
 
-        
-      
+
+
     // Check if all vertices are close to the center of mass
     const maxDistance = 200; // Maximum allowed distance from the center of mass
 
@@ -320,23 +320,23 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId, level}) => {
 
     return led;
   };
-      
+
 
   const snapThreshold = 15;
-  
+
   const [selectedShape, setSelectedShape] = useState(null);
   const collisionThreshold = 5; // Adjust this value as needed
 
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!selectedShape) return;
-  
+
       const { style } = selectedShape;
       const currentLeft = parseFloat(style.left);
       const currentTop = parseFloat(style.top);
       let newLeft = currentLeft;
       let newTop = currentTop;
-  
+
       switch (e.key) {
       case 'ArrowUp':
         newTop -= 5;
@@ -353,27 +353,27 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId, level}) => {
       default:
         break;
       }
-  
+
       const newVertices = calculateVertices(selectedShape, newLeft, newTop);
       const selectedShapeIndex = droppedShapes.findIndex((shape) => shape.id === selectedShape.id);
-  
+
       const isColliding = droppedShapes.some((otherShape, index) => {
         if (index === selectedShapeIndex) return false;
-  
+
         return newVertices.some((vertex1) => {
           return otherShape.vertices.some((vertex2) => {
             const dx = Math.abs(vertex1.x - vertex2.x);
             const dy = Math.abs(vertex1.y - vertex2.y);
-  
+
             return (dx < collisionThreshold && dy < collisionThreshold);
           });
         });
       });
-  
+
       if (!isColliding) {
         style.left = `${newLeft}px`;
         style.top = `${newTop}px`;
-  
+
         const updatedShape = { ...droppedShapes[selectedShapeIndex], position: { x: newLeft, y: newTop }, vertices: newVertices };
         emitSpritePositionToOtherPlayers(updatedShape, false);
         const updatedDroppedShapes = [
@@ -382,18 +382,18 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId, level}) => {
           ...droppedShapes.slice(selectedShapeIndex + 1),
         ];
         setDroppedShapes(updatedDroppedShapes);
-        playerSocket.emit('updatedPlayerValues', roomId, playerName, updatedShape); 
+        playerSocket.emit('updatedPlayerValues', roomId, playerName, updatedShape);
       }
     };
-  
+
     window.addEventListener('keydown', handleKeyDown);
-  
+
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [selectedShape]);
-  
-  
+
+
 
   const handleShapeClick = (e) => {
     setSelectedShape(e.target);
@@ -402,10 +402,10 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId, level}) => {
   useEffect(() => {
     const gameBox = document.getElementById('gameBox');
     const shapesContainer = document.getElementById('shapesContainer');
-  
+
     gameBox.addEventListener('dragover', handleDragOver);
     gameBox.addEventListener('drop', handleDrop);
-  
+
     return () => {
       gameBox.removeEventListener('dragover', handleDragOver);
       gameBox.removeEventListener('drop', handleDrop);
@@ -435,13 +435,13 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId, level}) => {
     // Assuming the triangle's base is parallel to the x-axis and its top vertex points upward
     const baseWidth = 100; // Replace with the actual width of the triangle's base
     const height = 86.6; // Replace with the actual height of the triangle
-  
+
     const vertices = [
       [x, y],
       [x - baseWidth / 2, y + height],
       [x + baseWidth / 2, y + height],
     ];
-  
+
     return vertices;
   };
 
@@ -486,8 +486,8 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId, level}) => {
         ...droppedShapes,
         droppedShapeObject
       ];
-      
-  
+
+
       setDroppedShapes(newDroppedShapes);
       setRemoveName(shape?.title);
 
@@ -515,7 +515,7 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId, level}) => {
       }
     });
   };
-  
+
   let shapelist = [];
   shapelist.push(shapeSvg);
   shapelist.push(shapeSvg1);
@@ -551,17 +551,17 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId, level}) => {
       <div className="right">
         <div>
           <div id="gameBox" ref={targetDropRef}>
-            <GameWorld id={'gameBox-main'}> 
+            <GameWorld id={'gameBox-main'}>
               {
                 newGameSprite?.map((shape, index) => {
                   const isOwner = shape?.owner === playerId;
                   if(shape?.isVisible && isOwner && !shape?.isOnBoard){
-                    return (<ShapeComponent 
-                      key={index} 
-                      shape={shape} 
-                      handleShapeClick={handleShapeClick} 
-                      handleDragStart={(e, data) => handleDragStart(e,data)}  
-                      theRef={targetDropRef} 
+                    return (<ShapeComponent
+                      key={index}
+                      shape={shape}
+                      handleShapeClick={handleShapeClick}
+                      handleDragStart={(e, data) => handleDragStart(e,data)}
+                      theRef={targetDropRef}
                       shapeUri={shape?.shapeUri}
                       setMovedShape={setMovedShape}
                       addOrUpdate={updateOrAddObject}
@@ -580,12 +580,12 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId, level}) => {
                 if(shape?.isOnBoard && isOwner && shape?.isVisible){
                   return (
                     <div className="onBoardShape" key={index}>
-                      <ShapeComponent 
-                        key={index} 
-                        shape={shape} 
-                        handleShapeClick={handleShapeClick} 
-                        handleDragStart={(e, data) => handleDragStart(e,data)}  
-                        theRef={targetDropRef} 
+                      <ShapeComponent
+                        key={index}
+                        shape={shape}
+                        handleShapeClick={handleShapeClick}
+                        handleDragStart={(e, data) => handleDragStart(e,data)}
+                        theRef={targetDropRef}
                         shapeUri={shape?.shapeUri}
                         setMovedShape={setMovedShape}
                         addOrUpdate={updateOrAddObject}
@@ -604,6 +604,7 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId, level}) => {
           <HintModal isOpen={isHintModalOpen} setModalOpen={setHintModalOpen} gameLevel={level}/>
         </div>
       </div>
+      <div> <h4> Remember your group's additional hint: There is no need to rotate the pieces to solve the puzzle. </h4> </div>
       <div style={{margin: '10px', marginRight: '20px'}}>
         <button onClick={() => setHintModalOpen(true)}>Hint</button>
       </div>
