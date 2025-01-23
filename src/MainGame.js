@@ -604,7 +604,7 @@ const MainGame = ({gameObjects, playersInRoom, playerName, roomId, level}) => {
           <HintModal isOpen={isHintModalOpen} setModalOpen={setHintModalOpen} gameLevel={level}/>
         </div>
       </div>
-      <div> <h4> Remember your group's additional hint: There is no need to rotate the pieces to solve the puzzle. </h4> </div>
+      //<div> <h4> Remember your group's additional hint: There is no need to rotate the pieces to solve the puzzle. </h4> </div>
       <div style={{margin: '10px', marginRight: '20px'}}>
         <button onClick={() => setHintModalOpen(true)}>Hint</button>
       </div>
