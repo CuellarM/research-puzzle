@@ -93,7 +93,7 @@ const Tabs = ({ playerName, movedPlayer, showSelect = true }) => {
       </div>
         }
       </div>
-      {!isPlayerValuesAvailable && <div> <h4> Player tabs would show here when other players start playing. Remember your group's additional hint: There is no need to rotate the pieces to solve the puzzle. </h4> </div>}
+      {!isPlayerValuesAvailable && <div> <h4> Player tabs would show here when other players start playing. </h4> </div>}
       {isPlayerValuesAvailable &&
       <div className="tabs">
         {playerValues?.map((item) => {
