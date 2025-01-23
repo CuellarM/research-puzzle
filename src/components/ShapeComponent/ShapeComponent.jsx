@@ -259,33 +259,33 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
       width = (initialSize?.width + 250)/5*3;
       break;
     case 'shapeB1':
-      height = initialSize?.height + 106;
-      width = initialSize?.width + 54;
+      height = (initialSize?.height + 340)/5*3;
+      width = (initialSize?.width + 250)/5*3;
       color = 'darkorange';
       break;
     case 'shapeB2':
-      height = initialSize?.height + 165;
-      width = initialSize?.width + 100;
+      height = (initialSize?.height + 250)/5*3;
+      width = (initialSize?.width + 520)/5*3;
       color = 'darkorange';
       break;
     case 'shapeB3':
-      height = initialSize?.height + 165;
-      width = initialSize?.width + 100;
+      height = (initialSize?.height + 250)/5*3;
+      width = (initialSize?.width + 520)/5*3;
       color = 'darkorange';
       break;
     case 'shapeB4':
-      height = initialSize?.height + 100;
-      width = initialSize?.width + 44;
+      height = (initialSize?.height + 160)/5*3;
+      width = (initialSize?.width + 250)/5*3;
       color = 'darkorange';
       break;
     case 'shapeB5':
-      height = initialSize?.height + 100;
-      width = initialSize?.width + 54;
+      height = (initialSize?.height + 100)/5*3;
+      width = (initialSize?.width - 20)/5*3;
       color = 'darkorange';
       break;
     case 'shapeB6':
-      height = initialSize?.height + 100;
-      width = initialSize?.width + 44;
+      height = (initialSize?.height + 160)/5*3;
+      width = (initialSize?.width - 20)/5*3;
       color = 'darkorange';
       break;
     default:
