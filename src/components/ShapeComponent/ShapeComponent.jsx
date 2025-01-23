@@ -242,21 +242,22 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
     let color = 'black';
 
     switch(getBeforeHyphen(shapeUri)){
-    case 'shapeA2':
-      height = initialSize?.height;
-      width = initialSize?.width;
-      break;
+
     case 'shapeA1':
-      height = initialSize?.height;
-      width = initialSize?.width;
+        height = initialSize?.height + 340;
+        width = initialSize?.width + 250;
+        break;
+    case 'shapeA2':
+      height = initialSize?.height + 250;
+      width = initialSize?.width + 520;
       break;
     case 'shapeA3':
-      height = initialSize?.height;
-      width = initialSize?.width;
+      height = initialSize?.height + 100;
+      width = initialSize?.width - 20;
       break;
     case 'shapeA4':
-      height = initialSize?.height;
-      width = initialSize?.width;
+      height = initialSize?.height + 160;
+      width = initialSize?.width + 250;
       break;
     case 'shapeB1':
       height = initialSize?.height + 106;
