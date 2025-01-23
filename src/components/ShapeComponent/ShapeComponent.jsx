@@ -242,11 +242,10 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
     let color = 'black';
 
     switch(getBeforeHyphen(shapeUri)){
-
     case 'shapeA1':
-        height = initialSize?.height + 340;
-        width = initialSize?.width + 250;
-        break;
+      height = initialSize?.height + 340;
+      width = initialSize?.width + 250;
+      break;
     case 'shapeA2':
       height = initialSize?.height + 250;
       width = initialSize?.width + 520;
