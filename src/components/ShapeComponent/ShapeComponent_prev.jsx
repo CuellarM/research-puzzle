@@ -53,7 +53,7 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
 
   const onStart = () => {
     setInitialPos({
-      x: draggableRef.current.state.x,
+      x: draggableRef.current.state.x,  
       y: draggableRef.current.state.y
     });
     setActiveDrag(activeDrags + 1);
@@ -80,19 +80,19 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
   const isOverTarget = (x, y, target) => {
     const targetBounds = target.getBoundingClientRect();
     const {left, right, top, bottom} = targetBounds;
-
+    
     // Check if x,y is within bounds
     if(x >= left && x <= right && y >= top && y <= bottom) {
       return true;
     }
-
+    
     return false;
   };
 
   const setForLocalStorage = (id, angle, shapeUri, x, y, owner, shapeId) => {
     const obj = {
       id: shapeId,
-      x: x,
+      x: x,  
       y: y,
       angle,
       shapeUri,
@@ -125,7 +125,7 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
       });
 
       const mainBoxOffset = {
-        x: theRef.current.clientLeft,
+        x: theRef.current.clientLeft, 
         y: theRef.current.clientTop
       };
 
@@ -143,14 +143,14 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
       const parts = translate?.slice(10, -1)?.split(', ');
 
       // Extract x and y
-      const x = parseInt(parts?.[0]); // -62
+      const x = parseInt(parts?.[0]); // -62 
       const y = parseInt(parts?.[1]); // -389
 
       shape['isOnBoard'] = false;
       shape['x'] = x;
       shape['y'] = y;
       updateState(shape);
-
+      
       setMovedShape({
         id: shape?.id,
         shapeId: e?.target?.id || imgElement?.id,
@@ -178,7 +178,7 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
   const isOverDropZone = (x, y) => {
     const el = document.elementsFromPoint(x, y);
     let isDropZone = false;
-
+      
     el?.forEach(value => {
       if(value.id === 'gameBox'){
         isDropZone = true;
@@ -226,11 +226,11 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
       // }
 
       // if(currDraggableRef.current.parentNode.contains(currDraggableRef.current)){
-      //   currDraggableRef.current.parentNode.removeChild(currDraggableRef.current);
+      //   currDraggableRef.current.parentNode.removeChild(currDraggableRef.current); 
       // } else {
       //   console.log('Cannot remove objhect from node')
       // }
-
+        
       // theShapeDragged?.classList.add("inBox");
     }
   };
@@ -243,20 +243,20 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
 
     switch(getBeforeHyphen(shapeUri)){
     case 'shapeA2':
-      height = initialSize?.height;
-      width = initialSize?.width;
+      height = initialSize?.height + 220;
+      width = initialSize?.width + 160;
       break;
     case 'shapeA1':
-      height = initialSize?.height;
-      width = initialSize?.width;
+      height = initialSize?.height + 150;
+      width = initialSize?.width + 150;
       break;
     case 'shapeA3':
-      height = initialSize?.height;
-      width = initialSize?.width;
+      height = initialSize?.height + 81;
+      width = initialSize?.width - 91;
       break;
     case 'shapeA4':
-      height = initialSize?.height;
-      width = initialSize?.width;
+      height = initialSize?.height + 90;
+      width = initialSize?.width - 10;
       break;
     case 'shapeB1':
       height = initialSize?.height + 106;
@@ -300,7 +300,7 @@ function ShapeComponent ({ shape, handleShapeClick, handleDragsStart,theRef, sha
       color: color
     };
   };
-
+  
   return (
     <div id={shapeUri} ref={currDraggableRef}>
       <Draggable id={shapeUri} onDrag={handleDrag} {...dragHandlers} onStop={handleDraggableDrop} ref={draggableRef} defaultPosition={{x: shape?.x || 0, y: shape?.y || 0}}>
