@@ -20,9 +20,9 @@ const GameView = ({ playerObjects, gameViewRef }) => {
 
   useEffect(() => {
     setPlayerValues(playerObjects);
-
+    
   }, [playerObjects]);
-
+  
 
   const SVGS = {
     'shapeA1': shapeA1,
@@ -45,7 +45,7 @@ const GameView = ({ playerObjects, gameViewRef }) => {
 
       const size = rect.width * 0.5;
 
-
+    
       return {
         x: xPct,
         y: yPct
@@ -88,56 +88,56 @@ const GameView = ({ playerObjects, gameViewRef }) => {
         let color = 'black';
 
         switch(getBeforeHyphen(shape?.shapeUri)){
-          case 'shapeA1':
-            height = (initialSize?.height + 340)/5*3;
-            width = (initialSize?.width + 250)/5*3;
-            break;
-          case 'shapeA2':
-            height = (initialSize?.height + 250)/5*3;
-            width = (initialSize?.width + 520)/5*3;
-            break;
-          case 'shapeA3':
-            height = (initialSize?.height + 100)/5*3;
-            width = (initialSize?.width - 20)/5*3;
-            break;
-          case 'shapeA4':
-            height = (initialSize?.height + 160)/5*3;
-            width = (initialSize?.width + 250)/5*3;
-            break;
-          case 'shapeB1':
-            height = (initialSize?.height + 340)/5*3;
-            width = (initialSize?.width + 250)/5*3;
-            color = 'darkorange';
-            break;
-          case 'shapeB2':
-            height = (initialSize?.height + 250)/5*3;
-            width = (initialSize?.width + 520)/5*3;
-            color = 'darkorange';
-            break;
-          case 'shapeB3':
-            height = (initialSize?.height + 250)/5*3;
-            width = (initialSize?.width + 520)/5*3;
-            color = 'darkorange';
-            break;
-          case 'shapeB4':
-            height = (initialSize?.height + 160)/5*3;
-            width = (initialSize?.width + 250)/5*3;
-            color = 'darkorange';
-            break;
-          case 'shapeB5':
-            height = (initialSize?.height + 100)/5*3;
-            width = (initialSize?.width - 20)/5*3;
-            color = 'darkorange';
-            break;
-          case 'shapeB6':
-            height = (initialSize?.height + 160)/5*3;
-            width = (initialSize?.width - 20)/5*3;
-            color = 'darkorange';
-            break;
-          default:
-            height = initialSize?.height;
-            width = initialSize?.width;
-            color = 'black';
+        case 'shapeA2':
+          height = initialSize?.height + 220;
+          width = initialSize?.width + 160;
+          break;
+        case 'shapeA1':
+          height = initialSize?.height + 150;
+          width = initialSize?.width + 150;
+          break;
+        case 'shapeA3':
+          height = initialSize?.height + 81;
+          width = initialSize?.width - 91;
+          break;
+        case 'shapeA4':
+          height = initialSize?.height + 90;
+          width = initialSize?.width - 10;
+          break;
+        case 'shapeB1':
+          height = initialSize?.height + 106;
+          width = initialSize?.width + 54;
+          color = 'darkorange';
+          break;
+        case 'shapeB2':
+          height = initialSize?.height + 165;
+          width = initialSize?.width + 100;
+          color = 'darkorange';
+          break;
+        case 'shapeB3':
+          height = initialSize?.height + 165;
+          width = initialSize?.width + 100;
+          color = 'darkorange';
+          break;
+        case 'shapeB4':
+          height = initialSize?.height + 100;
+          width = initialSize?.width + 44;
+          color = 'darkorange';
+          break;
+        case 'shapeB5':
+          height = initialSize?.height + 100;
+          width = initialSize?.width + 54;
+          color = 'darkorange';
+          break;
+        case 'shapeB6':
+          height = initialSize?.height + 100;
+          width = initialSize?.width + 44;
+          color = 'darkorange';
+          break;
+        default:
+          height = initialSize?.height;
+          width = initialSize?.width;
+          color = 'black';
         }
 
         return {
