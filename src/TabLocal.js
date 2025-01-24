@@ -117,7 +117,7 @@ const Tabs = ({ playerName, movedPlayer, showSelect = true }) => {
       {
         showSelect && (
           <div>
-            <h2>Request shapes from players</h2>
+            <h2>Request shapes from players. Remember your extra hint: No need to rotate pieces to solve the puzzle.</h2>
             <SelectPlayer playerObject={playerValues} handleRequest={handleSpriteRequestToPlayer} playerName={playerName}/>
           </div>
         )
